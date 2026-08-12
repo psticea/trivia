@@ -202,6 +202,18 @@ describe('linkuri de partajare', () => {
     expect(decoded).toEqual(payload);
   });
 
+  it('duce și o provocare fără scor, trimisă în timpul rundei', () => {
+    const open = { ...payload, score: null };
+    const decoded = decodeShare(encodeShare(open));
+    expect(decoded).toEqual(open);
+    expect(decoded!.score).toBeNull();
+  });
+
+  it('păstrează scorul zero, care nu e același lucru cu „fără scor”', () => {
+    const zero = { ...payload, score: 0 };
+    expect(decodeShare(encodeShare(zero))!.score).toBe(0);
+  });
+
   it('produce un token sigur pentru URL', () => {
     expect(encodeShare(payload)).toMatch(/^[A-Za-z0-9_-]+$/);
   });

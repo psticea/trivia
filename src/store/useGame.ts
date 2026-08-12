@@ -72,6 +72,7 @@ type GameState = {
   syncChallengeFromHash: () => void;
 
   shareToken: () => string;
+  shareLink: () => string;
   clearData: () => void;
 };
 
@@ -330,14 +331,21 @@ export const useGame = create<GameState>((set, get) => ({
 
   shareToken: () => {
     const { round, result } = get();
-    if (!round || !result) return '';
+    if (!round) return '';
     return encodeShare({
       difficulty: round.difficulty,
       categories: round.categories,
       seed: round.seed,
       questionIds: round.items.map((i) => i.question.id),
-      score: result.score,
+      // În timpul rundei nu există încă scor: linkul invită la aceeași rundă.
+      score: result ? result.score : null,
     });
+  },
+
+  shareLink: () => {
+    const token = get().shareToken();
+    if (!token || typeof window === 'undefined') return '';
+    return `${window.location.href.replace(/#.*$/, '').replace(/\?.*$/, '')}#p=${token}`;
   },
 
   clearData: () => {

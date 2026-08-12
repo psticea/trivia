@@ -6,6 +6,8 @@ Un joc de trivia **în limba română**, gândit întâi pentru telefon: 900 de 
 
 Site: <https://psticea.github.io/trivia/>
 
+**Provocări.** Orice rundă poate fi trimisă ca link, în două feluri: din timpul rundei (butonul `Invită`), ca să jucați aceleași zece întrebări în același timp, sau de la final, împreună cu scorul obținut. Linkul reproduce exact aceeași rundă — aceleași întrebări, în aceeași ordine, cu aceeași ordine a variantelor.
+
 ---
 
 ## Cuprins
@@ -50,7 +52,7 @@ src/
     select.ts           alegerea stratificată a celor 10 întrebări
     round.ts            construirea rundei și ordinea opțiunilor
     scoring.ts          punctaj, defalcare pe categorii, statistici
-    share.ts            codificarea rundei într-un link
+    share.ts            codificarea rundei într-un link, cu sau fără scor
     rng.ts              generator determinist (runde reproductibile)
     storage.ts          acces tolerant la localStorage
   store/useGame.ts      starea aplicației (zustand)

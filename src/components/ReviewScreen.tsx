@@ -54,9 +54,9 @@ export function ReviewScreen() {
                 </span>
               </div>
 
-              <h2 className="mt-4 text-[1.3rem] leading-[1.2] text-text sm:text-[1.4rem]">{q.question}</h2>
+              <h2 className="mt-4 text-[1.4rem] leading-[1.2] text-text sm:text-[1.5rem]">{q.question}</h2>
 
-              <dl className="mt-5 space-y-2.5 text-[1rem]">
+              <dl className="mt-5 space-y-2.5 text-[1.0625rem]">
                 {!correct && (
                   <div className="flex gap-3">
                     <dt className="label w-[6.5rem] shrink-0 pt-1 text-faint">{ro.review.yourAnswer}</dt>
@@ -72,7 +72,7 @@ export function ReviewScreen() {
               </dl>
 
               <div className="mt-5 flex-1 border-t border-line pt-4">
-                <p className="text-[1.0625rem] leading-[1.5] text-dim">{q.explanation}</p>
+                <p className="text-[1.125rem] leading-[1.5] text-dim">{q.explanation}</p>
                 {q.source && (
                   <p className="label mt-3 text-faint opacity-75">
                     {ro.round.source}: {q.source}

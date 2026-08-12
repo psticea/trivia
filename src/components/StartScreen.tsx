@@ -41,7 +41,7 @@ export function StartScreen() {
             <span className="block text-accent-ink">de întrebări</span>
           </h1>
 
-          <p className="relative mt-7 max-w-[36ch] text-[1.125rem] leading-[1.5] text-dim sm:text-[1.25rem]">
+          <p className="relative mt-7 max-w-[36ch] text-[1.1875rem] leading-[1.5] text-dim sm:text-[1.3125rem]">
             {ro.meta.subtitle}
           </p>
 
@@ -61,8 +61,10 @@ export function StartScreen() {
           {challenge && (
             <section className="relative mt-8 rounded-lg border border-accent bg-accent-veil p-5 sm:p-6">
               <p className="label text-accent-ink">{ro.start.challengeIntro}</p>
-              <p className="mt-2.5 text-[1.0625rem] leading-snug text-text">
-                {ro.start.challengeDetail(challenge.score, challenge.questionIds.length)}
+              <p className="mt-2.5 text-[1.125rem] leading-snug text-text">
+                {challenge.score === null
+                  ? ro.start.challengeDetailOpen(challenge.questionIds.length)
+                  : ro.start.challengeDetail(challenge.score, challenge.questionIds.length)}
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
                 <button type="button" className="btn btn-primary" onClick={acceptChallenge}>
@@ -98,7 +100,7 @@ export function StartScreen() {
                     aria-pressed={active}
                     onClick={() => setDifficulty(d.id)}
                     className={[
-                      'relative z-10 min-h-13 rounded-full px-2 text-[1.0625rem] font-semibold transition-colors duration-[var(--dur-fast)]',
+                      'relative z-10 min-h-14 rounded-full px-2 text-[1.125rem] font-semibold transition-colors duration-[var(--dur-fast)]',
                       active ? 'text-on-accent' : 'text-dim hover:text-text',
                     ].join(' ')}
                   >
@@ -107,7 +109,7 @@ export function StartScreen() {
                 );
               })}
             </div>
-            <p className="mt-3.5 pl-1 text-[1.0625rem] text-faint">{activeHint}</p>
+            <p className="mt-3.5 pl-1 text-[1.125rem] text-faint">{activeHint}</p>
           </fieldset>
 
           <div className="mt-12">
@@ -148,10 +150,10 @@ export function StartScreen() {
                         {on && <CheckMark className="size-3.5" />}
                       </span>
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate text-[1.0625rem] leading-tight font-semibold">
+                        <span className="block truncate text-[1.125rem] leading-tight font-semibold">
                           {cat.name}
                         </span>
-                        <span className="mt-1 block truncate text-[0.875rem] leading-tight text-faint">
+                        <span className="mt-1 block truncate text-[0.9375rem] leading-tight text-faint">
                           {cat.blurb}
                         </span>
                       </span>
@@ -164,13 +166,13 @@ export function StartScreen() {
             <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
               <button
                 type="button"
-                className="text-[1rem] font-semibold text-accent-ink underline-offset-4 hover:underline disabled:pointer-events-none disabled:opacity-35"
+                className="text-[1.0625rem] font-semibold text-accent-ink underline-offset-4 hover:underline disabled:pointer-events-none disabled:opacity-35"
                 onClick={selectAllCategories}
                 disabled={categories.length === CATEGORIES.length}
               >
                 {ro.start.allCategories}
               </button>
-              <p id="cat-min-note" className={`text-[0.9375rem] ${atMinimum ? 'text-accent-ink' : 'text-faint'}`}>
+              <p id="cat-min-note" className={`text-[1rem] ${atMinimum ? 'text-accent-ink' : 'text-faint'}`}>
                 {ro.start.minWarning}
               </p>
             </div>

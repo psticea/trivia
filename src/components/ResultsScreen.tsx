@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { CATEGORY_BY_ID } from '../data/categories';
 import { DIFFICULTY_LABEL, ro } from '../i18n/ro';
-import { shareUrl } from '../game/share';
 import { useGame } from '../store/useGame';
 import { CheckMark, GhostNumeral, ScoreBar } from './Motif';
 
@@ -21,7 +20,7 @@ export function ResultsScreen() {
   const goToReview = useGame((s) => s.goToReview);
   const startRound = useGame((s) => s.startRound);
   const goToStart = useGame((s) => s.goToStart);
-  const shareToken = useGame((s) => s.shareToken);
+  const shareLink = useGame((s) => s.shareLink);
 
   const reduceMotion = useReducedMotion();
   const [copied, setCopied] = useState(false);
@@ -29,19 +28,9 @@ export function ResultsScreen() {
 
   if (!result || !round) return null;
 
-  const link = shareUrl(
-    {
-      difficulty: round.difficulty,
-      categories: round.categories,
-      seed: round.seed,
-      questionIds: round.items.map((i) => i.question.id),
-      score: result.score,
-    },
-    typeof window === 'undefined' ? '' : window.location.href,
-  );
-
   async function handleShare() {
-    if (!shareToken()) return;
+    const link = shareLink();
+    if (!link) return;
     try {
       await navigator.clipboard.writeText(link);
       setCopied(true);
@@ -73,7 +62,7 @@ export function ResultsScreen() {
           </div>
 
           <h1 className="mt-6 text-[clamp(1.9rem,7.5vw,2.9rem)] text-text">{verdict(result.score, result.total)}</h1>
-          <p className="mt-3 text-[1.0625rem] text-dim sm:text-[1.125rem]">
+          <p className="mt-3 text-[1.125rem] text-dim sm:text-[1.1875rem]">
             {ro.results.scoreLine(result.score, result.total)}
             <span className="mx-2 text-line-hi">/</span>
             {DIFFICULTY_LABEL[result.difficulty]}
@@ -117,7 +106,7 @@ export function ResultsScreen() {
 
           <button
             type="button"
-            className="mt-7 block text-[1rem] font-semibold text-faint underline-offset-4 transition-colors hover:text-text hover:underline"
+            className="mt-7 block text-[1.0625rem] font-semibold text-faint underline-offset-4 transition-colors hover:text-text hover:underline"
             onClick={goToStart}
           >
             {ro.results.backToStart}
@@ -132,10 +121,10 @@ export function ResultsScreen() {
             {result.breakdown.map((row) => (
               <li key={row.category}>
                 <div className="flex items-baseline justify-between gap-4">
-                  <span className="min-w-0 flex-1 truncate text-[1.0625rem] font-medium text-text">
+                  <span className="min-w-0 flex-1 truncate text-[1.125rem] font-medium text-text">
                     {CATEGORY_BY_ID[row.category].name}
                   </span>
-                  <span className="numeral shrink-0 text-[1.125rem] text-dim">
+                  <span className="numeral shrink-0 text-[1.1875rem] text-dim">
                     {row.correct}/{row.total}
                   </span>
                 </div>

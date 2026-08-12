@@ -23,6 +23,8 @@ export const ro = {
     challengeIntro: 'Ai primit o provocare',
     challengeDetail: (score: number, total: number) =>
       `Cine ți-a trimis linkul a răspuns corect la ${score} din ${total}. Primești exact aceleași întrebări.`,
+    challengeDetailOpen: (total: number) =>
+      `Primești exact aceleași ${total} întrebări, în aceeași ordine. Jucați runda în același timp.`,
     challengeStart: 'Acceptă provocarea',
     challengeDismiss: 'Nu, vreau o rundă nouă',
   },
@@ -48,6 +50,9 @@ export const ro = {
     source: 'Sursă',
     timeUp: 'A expirat timpul',
     quit: 'Renunță',
+    invite: 'Invită',
+    inviteAria: 'Trimite linkul acestei runde',
+    inviteCopied: 'Copiat',
     quitConfirm: 'Închizi runda și pierzi răspunsurile de până acum?',
     keyHint: 'Taste 1–4 pentru răspuns, Enter pentru a continua',
   },

@@ -3,7 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { CATEGORY_BY_ID } from '../data/categories';
 import { DIFFICULTY_LABEL, OPTION_LETTERS, ro } from '../i18n/ro';
 import { TIMER_SECONDS, useGame } from '../store/useGame';
-import { ArrowRight, CheckMark, CrossMark, GhostNumeral, ProgressRail } from './Motif';
+import { ArrowRight, CheckMark, CrossMark, GhostNumeral, LinkIcon, ProgressRail } from './Motif';
 
 export function QuestionScreen() {
   const round = useGame((s) => s.round);
@@ -17,11 +17,27 @@ export function QuestionScreen() {
   const advance = useGame((s) => s.advance);
   const onTimeout = useGame((s) => s.timeout);
   const quitRound = useGame((s) => s.quitRound);
+  const shareLink = useGame((s) => s.shareLink);
 
   const reduceMotion = useReducedMotion();
   const headingRef = useRef<HTMLHeadingElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [remaining, setRemaining] = useState(TIMER_SECONDS);
+  const [invited, setInvited] = useState(false);
+  const [inviteFallback, setInviteFallback] = useState<string | null>(null);
+
+  /** Linkul rundei se poate trimite oricând, nu doar la final: jucați împreună. */
+  async function handleInvite() {
+    const link = shareLink();
+    if (!link) return;
+    try {
+      await navigator.clipboard.writeText(link);
+      setInvited(true);
+      window.setTimeout(() => setInvited(false), 2400);
+    } catch {
+      setInviteFallback(link);
+    }
+  }
 
   const item = round?.items[index];
   const total = round?.items.length ?? 0;
@@ -78,20 +94,41 @@ export function QuestionScreen() {
           {/* ── Antetul rundei ── */}
           <div className="flex items-center justify-between gap-4 pt-4 lg:pt-6">
             <div className="flex min-w-0 items-center gap-2.5">
-              <span className="label truncate text-accent-ink">{category.name}</span>
+              <span className="label truncate text-[0.75rem] text-accent-ink sm:text-[0.8125rem]">{category.name}</span>
               <span aria-hidden="true" className="text-line-hi">
                 /
               </span>
-              <span className="label truncate text-faint">{DIFFICULTY_LABEL[question.difficulty]}</span>
+              <span className="label truncate text-[0.75rem] text-faint sm:text-[0.8125rem]">
+                {DIFFICULTY_LABEL[question.difficulty]}
+              </span>
             </div>
 
-            <div className="flex shrink-0 items-center gap-4">
-              <p className="label text-faint" role="status" aria-live="polite" aria-label={ro.a11y.progressRegion}>
+            <div className="flex shrink-0 items-center gap-3 sm:gap-4">
+              <p
+                className="label sr-only text-[0.75rem] text-faint sm:not-sr-only sm:text-[0.8125rem]"
+                role="status"
+                aria-live="polite"
+                aria-label={ro.a11y.progressRegion}
+              >
                 {ro.round.progressShort(index + 1, total)}
               </p>
               <button
                 type="button"
-                className="label text-faint transition-colors hover:text-text"
+                className={[
+                  'label flex min-h-11 items-center gap-1.5 text-[0.75rem] transition-colors sm:text-[0.8125rem]',
+                  invited ? 'text-accent-ink' : 'text-faint hover:text-text',
+                ].join(' ')}
+                onClick={handleInvite}
+                aria-label={ro.round.inviteAria}
+              >
+                {invited ? <CheckMark className="size-4" /> : <LinkIcon className="size-[18px]" />}
+                <span className={invited ? 'inline' : 'hidden sm:inline'}>
+                  {invited ? ro.round.inviteCopied : ro.round.invite}
+                </span>
+              </button>
+              <button
+                type="button"
+                className="label min-h-11 text-[0.75rem] text-faint transition-colors hover:text-text sm:text-[0.8125rem]"
                 onClick={() => {
                   if (window.confirm(ro.round.quitConfirm)) quitRound();
                 }}
@@ -106,6 +143,18 @@ export function QuestionScreen() {
               <div
                 className="h-full bg-accent transition-[width] duration-1000 ease-linear"
                 style={{ width: `${(remaining / TIMER_SECONDS) * 100}%` }}
+              />
+            </div>
+          )}
+
+          {inviteFallback && (
+            <div className="mt-3">
+              <p className="label text-faint">{ro.results.shareFallback}</p>
+              <input
+                readOnly
+                value={inviteFallback}
+                onFocus={(e) => e.currentTarget.select()}
+                className="mt-1.5 w-full rounded-md border border-line bg-surface px-3 py-2.5 font-mono text-[0.8125rem] text-dim"
               />
             </div>
           )}
@@ -130,7 +179,7 @@ export function QuestionScreen() {
                   ref={headingRef}
                   tabIndex={-1}
                   id="question-text"
-                  className="text-[clamp(1.6rem,6.4vw,2.9rem)] text-text outline-none"
+                  className="text-[clamp(1.75rem,7vw,3rem)] text-text outline-none"
                 >
                   {question.question}
                 </h2>
@@ -157,7 +206,7 @@ export function QuestionScreen() {
                         onClick={() => answer(originalIndex)}
                         aria-label={`${ro.a11y.optionPrefix(OPTION_LETTERS[slot])}: ${question.options[originalIndex]}`}
                         className={[
-                          'group flex min-h-16 w-full items-center gap-4 rounded-lg border px-4 py-3.5 text-left',
+                          'group flex min-h-[4.25rem] w-full items-center gap-4 rounded-lg border px-4 py-3.5 text-left',
                           'transition-[background-color,border-color,opacity,transform] duration-[var(--dur-fast)] ease-[var(--ease-out-expo)]',
                           showCorrect
                             ? 'border-accent bg-accent-veil text-text'
@@ -188,7 +237,7 @@ export function QuestionScreen() {
                             OPTION_LETTERS[slot]
                           )}
                         </span>
-                        <span className="flex-1 text-[1.0625rem] leading-snug font-medium sm:text-[1.125rem]">
+                        <span className="flex-1 text-[1.1875rem] leading-snug font-medium sm:text-[1.25rem]">
                           {question.options[originalIndex]}
                         </span>
                         {showCorrect && <span className="label shrink-0 text-accent-ink">{ro.round.correct}</span>}
@@ -222,13 +271,13 @@ export function QuestionScreen() {
                           )}
                         </p>
                         {!answeredCorrectly && (
-                          <p className="mt-2 text-[1.0625rem] leading-snug text-faint">
+                          <p className="mt-2 text-[1.125rem] leading-snug text-faint">
                             {ro.round.reveal}{' '}
                             <span className="font-semibold text-text">{question.options[question.correctIndex]}</span>
                           </p>
                         )}
                       </div>
-                      <p className="mt-3 text-[1.0625rem] leading-[1.5] text-dim sm:text-[1.125rem]">
+                      <p className="mt-3 text-[1.125rem] leading-[1.5] text-dim sm:text-[1.1875rem]">
                         {question.explanation}
                       </p>
                       {question.source && (

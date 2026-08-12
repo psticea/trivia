@@ -6,7 +6,7 @@ import { averageScore, rankedCategories } from '../game/scoring';
 import { useGame } from '../store/useGame';
 import type { Theme } from '../theme';
 
-/** Dialog nativ: focus trap, Escape și rol ARIA fără bibliotecă suplimentară. */
+/** Dialog nativ: focus trap, Escape È™i rol ARIA fÄƒrÄƒ bibliotecÄƒ suplimentarÄƒ. */
 function Sheet({
   open,
   onClose,
@@ -64,7 +64,7 @@ export function StatsDialog({ open, onClose }: { open: boolean; onClose: () => v
   return (
     <Sheet open={open} onClose={onClose} title={ro.stats.heading}>
       {played === 0 ? (
-        <p className="text-[1.125rem] leading-snug text-faint">{ro.stats.empty}</p>
+        <p className="text-[1.1875rem] leading-snug text-faint">{ro.stats.empty}</p>
       ) : (
         <>
           <p className="label text-faint">{ro.stats.perDifficulty}</p>
@@ -77,7 +77,7 @@ export function StatsDialog({ open, onClose }: { open: boolean; onClose: () => v
                   key={t}
                   className="flex items-center gap-4 rounded-md border border-line bg-surface px-4 py-4"
                 >
-                  <span className="flex-1 text-[1.0625rem] font-semibold text-text">{DIFFICULTY_LABEL[t]}</span>
+                  <span className="flex-1 text-[1.125rem] font-semibold text-text">{DIFFICULTY_LABEL[t]}</span>
                   <span className="w-16 text-right">
                     <span className="label block text-faint">{ro.stats.rounds}</span>
                     <span className="numeral text-[1.25rem] text-text">{s.rounds}</span>
@@ -85,13 +85,13 @@ export function StatsDialog({ open, onClose }: { open: boolean; onClose: () => v
                   <span className="w-16 text-right">
                     <span className="label block text-faint">{ro.stats.average}</span>
                     <span className="numeral text-[1.25rem] text-text">
-                      {avg === null ? '—' : avg.toFixed(1)}
+                      {avg === null ? 'â€”' : avg.toFixed(1)}
                     </span>
                   </span>
                   <span className="w-16 text-right">
                     <span className="label block text-faint">{ro.stats.best}</span>
                     <span className="numeral text-[1.25rem] text-accent-ink">
-                      {s.rounds === 0 ? '—' : s.best}
+                      {s.rounds === 0 ? 'â€”' : s.best}
                     </span>
                   </span>
                 </li>
@@ -101,14 +101,14 @@ export function StatsDialog({ open, onClose }: { open: boolean; onClose: () => v
 
           <div className="mt-9">
             {ranked.length < 2 ? (
-              <p className="text-[1.0625rem] text-faint">{ro.stats.needMore}</p>
+              <p className="text-[1.125rem] text-faint">{ro.stats.needMore}</p>
             ) : (
               <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
                 <div>
                   <p className="label text-accent-ink">{ro.stats.strongest}</p>
                   <ul className="mt-3 space-y-2">
                     {ranked.slice(0, 3).map((r) => (
-                      <li key={r.category} className="flex items-center gap-3 text-[1rem] text-dim">
+                      <li key={r.category} className="flex items-center gap-3 text-[1.0625rem] text-dim">
                         <span className="flex-1 truncate">{CATEGORY_BY_ID[r.category].name}</span>
                         <span className="numeral text-text">{Math.round(r.pct * 100)}%</span>
                       </li>
@@ -122,7 +122,7 @@ export function StatsDialog({ open, onClose }: { open: boolean; onClose: () => v
                       .slice(-3)
                       .reverse()
                       .map((r) => (
-                        <li key={r.category} className="flex items-center gap-3 text-[1rem] text-dim">
+                        <li key={r.category} className="flex items-center gap-3 text-[1.0625rem] text-dim">
                           <span className="flex-1 truncate">{CATEGORY_BY_ID[r.category].name}</span>
                           <span className="numeral text-text">{Math.round(r.pct * 100)}%</span>
                         </li>
@@ -165,7 +165,7 @@ function Segmented<T extends string>({
             aria-pressed={active}
             onClick={() => onChange(o.id)}
             className={[
-              'min-h-11 rounded-full px-4 text-[0.9375rem] font-semibold transition-colors duration-[var(--dur-fast)]',
+              'min-h-12 rounded-full px-4 text-[1rem] font-semibold transition-colors duration-[var(--dur-fast)]',
               active ? 'bg-accent text-on-accent' : 'text-dim hover:text-text',
             ].join(' ')}
           >
@@ -189,8 +189,8 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
     <Sheet open={open} onClose={onClose} title={ro.settings.heading}>
       <div className="flex flex-wrap items-start justify-between gap-5">
         <div className="min-w-[14rem] flex-1">
-          <p className="text-[1.0625rem] font-semibold text-text">{ro.settings.theme}</p>
-          <p className="mt-1.5 text-[0.9375rem] leading-snug text-faint">{ro.settings.themeHint}</p>
+          <p className="text-[1.125rem] font-semibold text-text">{ro.settings.theme}</p>
+          <p className="mt-1.5 text-[1rem] leading-snug text-faint">{ro.settings.themeHint}</p>
         </div>
         <Segmented<Theme>
           label={ro.settings.theme}
@@ -207,8 +207,8 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
 
       <div className="flex flex-wrap items-start justify-between gap-5">
         <div className="min-w-[14rem] flex-1">
-          <p className="text-[1.0625rem] font-semibold text-text">{ro.settings.timer}</p>
-          <p className="mt-1.5 text-[0.9375rem] leading-snug text-faint">{ro.settings.timerHint}</p>
+          <p className="text-[1.125rem] font-semibold text-text">{ro.settings.timer}</p>
+          <p className="mt-1.5 text-[1rem] leading-snug text-faint">{ro.settings.timerHint}</p>
         </div>
         <Segmented<'on' | 'off'>
           label={ro.settings.timer}
@@ -223,8 +223,8 @@ export function SettingsDialog({ open, onClose }: { open: boolean; onClose: () =
 
       <hr className="my-7 border-0 border-t border-line" />
 
-      <p className="text-[1.0625rem] font-semibold text-text">{ro.settings.data}</p>
-      <p className="mt-1.5 text-[0.9375rem] leading-snug text-faint">{ro.settings.dataHint}</p>
+      <p className="text-[1.125rem] font-semibold text-text">{ro.settings.data}</p>
+      <p className="mt-1.5 text-[1rem] leading-snug text-faint">{ro.settings.dataHint}</p>
       <button
         type="button"
         className="btn btn-ghost mt-5 border-wrong text-wrong-ink hover:border-wrong hover:bg-wrong-veil"

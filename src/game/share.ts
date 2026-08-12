@@ -6,7 +6,8 @@ export type SharePayload = {
   categories: CategoryId[];
   seed: number;
   questionIds: string[];
-  score: number;
+  /** null = provocare trimisă înainte de final, fără scor de bătut. */
+  score: number | null;
 };
 
 const DIFF_CODE: Record<Difficulty, string> = { usor: 'u', mediu: 'm', dificil: 'd' };
@@ -39,7 +40,7 @@ export function encodeShare(payload: SharePayload): string {
     cats,
     payload.seed.toString(36),
     payload.questionIds.join('.'),
-    String(payload.score),
+    payload.score === null ? '' : String(payload.score),
   ].join('|');
   return toBase64Url(raw);
 }
@@ -64,8 +65,8 @@ export function decodeShare(token: string): SharePayload | null {
   const questionIds = parts[4].split('.').filter(Boolean);
   if (questionIds.length === 0) return null;
 
-  const score = Number.parseInt(parts[5], 10);
-  if (!Number.isFinite(score)) return null;
+  const score = parts[5] === '' ? null : Number.parseInt(parts[5], 10);
+  if (score !== null && !Number.isFinite(score)) return null;
 
   return { difficulty, categories, seed, questionIds, score };
 }
