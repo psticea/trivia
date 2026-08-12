@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Fișier de întrebări">
+  <rect width="64" height="64" rx="14" fill="#0b0b0d" />
+  <rect x="10" y="14" width="44" height="5" rx="2.5" fill="#d6ff3f" />
+  <rect x="10" y="26" width="30" height="5" rx="2.5" fill="#3d3d47" />
+  <rect x="10" y="38" width="38" height="5" rx="2.5" fill="#3d3d47" />
+  <circle cx="46" cy="45.5" r="7" fill="#d6ff3f" />
+</svg>

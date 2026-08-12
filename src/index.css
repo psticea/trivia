@@ -1,0 +1,269 @@
+@import 'tailwindcss';
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CONCEPT: un panou de control redus la esențial — fundal aproape negru,
+   tipografie mare și un singur gest de culoare, verde citric, care
+   înseamnă întotdeauna „corect”. Fără ornament, fără umbre, fără sticlă.
+   Fiecare valoare de mai jos răspunde acestei propoziții.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Temele schimbă doar aceste variabile; restul sistemului le referă. */
+:root,
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --c-bg: #0b0b0d;
+  --c-bg-veil: #131319;
+  --c-surface: #17171b;
+  --c-surface-hi: #202026;
+  --c-line: #2b2b33;
+  --c-line-hi: #3d3d47;
+  --c-text: #f5f5f3;
+  --c-text-dim: #a3a3ad;
+  --c-text-faint: #74747f;
+
+  --c-accent: #d6ff3f;
+  --c-accent-ink: #d6ff3f;
+  --c-accent-veil: rgba(214, 255, 63, 0.12);
+  --c-on-accent: #0b0b0d;
+
+  --c-wrong: #ff5c57;
+  --c-wrong-ink: #ff726d;
+  --c-wrong-veil: rgba(255, 92, 87, 0.13);
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+
+  --c-bg: #f6f6f3;
+  --c-bg-veil: #ffffff;
+  --c-surface: #ffffff;
+  --c-surface-hi: #eeeee9;
+  --c-line: #e1e1da;
+  --c-line-hi: #c2c2b9;
+  --c-text: #101012;
+  --c-text-dim: #55555f;
+  --c-text-faint: #83838c;
+
+  --c-accent: #c8f52e;
+  --c-accent-ink: #46620a;
+  --c-accent-veil: rgba(151, 191, 12, 0.16);
+  --c-on-accent: #101012;
+
+  --c-wrong: #d93a34;
+  --c-wrong-ink: #bd2f29;
+  --c-wrong-veil: rgba(217, 58, 52, 0.09);
+}
+
+@theme {
+  /* Paleta implicită Tailwind e ștearsă complet: nimic „slate” sau „indigo”. */
+  --color-*: initial;
+  --font-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+
+  --color-bg: var(--c-bg);
+  --color-veil: var(--c-bg-veil);
+  --color-surface: var(--c-surface);
+  --color-surface-hi: var(--c-surface-hi);
+  --color-line: var(--c-line);
+  --color-line-hi: var(--c-line-hi);
+  --color-text: var(--c-text);
+  --color-dim: var(--c-text-dim);
+  --color-faint: var(--c-text-faint);
+
+  --color-accent: var(--c-accent);
+  --color-accent-ink: var(--c-accent-ink);
+  --color-accent-veil: var(--c-accent-veil);
+  --color-on-accent: var(--c-on-accent);
+
+  --color-wrong: var(--c-wrong);
+  --color-wrong-ink: var(--c-wrong-ink);
+  --color-wrong-veil: var(--c-wrong-veil);
+
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  /* Un grotesc contemporan cu axă de lățime pentru titluri, același desen la
+     lățime normală pentru text, plus un mono pentru cifre și etichete.
+     Toate trei includ subsetul latin-ext (ă â î ș ț). */
+  --font-display: 'Bricolage Grotesque Variable', 'Archivo Variable', system-ui, sans-serif;
+  --font-body: 'Archivo Variable', system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', monospace;
+
+  --radius-lg: 14px;
+  --radius-md: 10px;
+  --radius-full: 999px;
+
+  /* O singură curbă, două durate: mișcarea nu trebuie să se facă remarcată. */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 140ms;
+  --dur-slow: 240ms;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    background-color: var(--c-bg);
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior-y: none;
+    transition:
+      background-color var(--dur-slow) var(--ease-out-expo),
+      color var(--dur-slow) var(--ease-out-expo);
+  }
+
+  /* Un singur strat de atmosferă: o lumină joasă, în colțul din dreapta sus. */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(84% 58% at 80% -10%, var(--c-bg-veil), transparent 68%);
+  }
+
+  #root {
+    position: relative;
+    z-index: 1;
+    min-height: 100dvh;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-variation-settings: 'wdth' 108, 'opsz' 40, 'wght' 600;
+    line-height: 1.03;
+    letter-spacing: -0.028em;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  button {
+    font: inherit;
+    color: inherit;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+}
+
+@utility label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+@utility numeral {
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 100, 'opsz' 96, 'wght' 550;
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: -0.035em;
+}
+
+/* Motivul recurent: numărul uriaș al momentului, în spatele conținutului. */
+@utility ghost-numeral {
+  font-family: var(--font-display);
+  font-variation-settings: 'wdth' 100, 'opsz' 96, 'wght' 700;
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: -0.06em;
+  line-height: 0.72;
+  color: var(--color-text);
+  opacity: 0.05;
+  pointer-events: none;
+  user-select: none;
+}
+
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    min-height: 3.5rem;
+    padding: 0 1.75rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-full);
+    font-family: var(--font-body);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    transition:
+      transform var(--dur-fast) var(--ease-out-expo),
+      background-color var(--dur-fast) var(--ease-out-expo),
+      border-color var(--dur-fast) var(--ease-out-expo),
+      opacity var(--dur-fast) var(--ease-out-expo);
+  }
+
+  .btn-primary {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  .btn-primary:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border-color: var(--color-line-hi);
+    color: var(--color-text);
+  }
+
+  .btn-ghost:hover:not(:disabled) {
+    border-color: var(--color-text);
+    background: var(--color-surface);
+  }
+
+  .btn:disabled {
+    opacity: 0.28;
+    cursor: default;
+  }
+
+  .surface {
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-lg);
+  }
+
+  dialog::backdrop {
+    background: color-mix(in srgb, #000 68%, transparent);
+    backdrop-filter: blur(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

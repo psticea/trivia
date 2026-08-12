@@ -1,0 +1,177 @@
+<!doctype html>
+<!--
+  Sursa imaginii Open Graph. Se randează la 1200×630 și se salvează în
+  public/og-image.png (vezi README, „Regenerarea imaginii de previzualizare”).
+  Fonturile sunt citite direct din node_modules, ca imaginea să folosească
+  exact aceleași litere ca site-ul.
+-->
+<html lang="ro">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      @font-face {
+        font-family: 'Bricolage';
+        src:
+          url('../node_modules/@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-ext-standard-normal.woff2')
+            format('woff2-variations'),
+          url('../node_modules/@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-standard-normal.woff2')
+            format('woff2-variations');
+        font-weight: 200 800;
+      }
+      @font-face {
+        font-family: 'Archivo';
+        src:
+          url('../node_modules/@fontsource-variable/archivo/files/archivo-latin-ext-wght-normal.woff2')
+            format('woff2-variations'),
+          url('../node_modules/@fontsource-variable/archivo/files/archivo-latin-wght-normal.woff2')
+            format('woff2-variations');
+        font-weight: 100 900;
+      }
+      @font-face {
+        font-family: 'Plex';
+        src: url('../node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-ext-500-normal.woff2')
+          format('woff2');
+        font-weight: 500;
+      }
+
+      * {
+        margin: 0;
+        box-sizing: border-box;
+      }
+      body {
+        width: 1200px;
+        height: 630px;
+        background: #0b0b0d;
+        color: #f5f5f3;
+        font-family: 'Archivo', sans-serif;
+        position: relative;
+        overflow: hidden;
+      }
+      .veil {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(84% 58% at 80% -10%, #16161d, transparent 68%);
+      }
+      .ghost {
+        position: absolute;
+        top: -70px;
+        right: 40px;
+        font-family: 'Bricolage', sans-serif;
+        font-variation-settings: 'wdth' 100, 'opsz' 96, 'wght' 700;
+        font-size: 430px;
+        letter-spacing: -0.06em;
+        line-height: 0.72;
+        color: #f5f5f3;
+        opacity: 0.05;
+      }
+      .rail {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        display: flex;
+        gap: 4px;
+      }
+      .rail i {
+        flex: 1;
+        background: #2b2b33;
+      }
+      .rail i:nth-child(-n + 7) {
+        background: #d6ff3f;
+      }
+      .content {
+        position: absolute;
+        inset: 0;
+        padding: 78px 72px 64px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .kicker {
+        font-family: 'Plex', monospace;
+        font-weight: 500;
+        font-size: 19px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #74747f;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .kicker b {
+        display: block;
+        width: 34px;
+        height: 6px;
+        border-radius: 99px;
+        background: #d6ff3f;
+      }
+      h1 {
+        font-family: 'Bricolage', sans-serif;
+        font-variation-settings: 'wdth' 108, 'opsz' 40, 'wght' 600;
+        font-size: 128px;
+        line-height: 0.98;
+        letter-spacing: -0.03em;
+        margin-top: 34px;
+      }
+      h1 span {
+        display: block;
+        color: #d6ff3f;
+      }
+      .foot {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 48px;
+      }
+      .tagline {
+        font-size: 27px;
+        line-height: 1.4;
+        color: #a3a3ad;
+        max-width: 27ch;
+      }
+      .stats {
+        display: flex;
+        gap: 52px;
+      }
+      .stat span {
+        font-family: 'Plex', monospace;
+        font-size: 15px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #74747f;
+        display: block;
+      }
+      .stat b {
+        font-family: 'Bricolage', sans-serif;
+        font-variation-settings: 'wdth' 100, 'opsz' 96, 'wght' 550;
+        font-size: 52px;
+        letter-spacing: -0.035em;
+        font-weight: normal;
+        display: block;
+        margin-top: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="veil"></div>
+    <div class="ghost">900</div>
+    <div class="rail">
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+    </div>
+    <div class="content">
+      <div>
+        <p class="kicker"><b></b> Fișier de întrebări · trivia în limba română</p>
+        <h1>Nouă sute<span>de întrebări</span></h1>
+      </div>
+      <div class="foot">
+        <p class="tagline">Zece pe rundă. Alegi nivelul, alegi domeniile, restul ține de tine.</p>
+        <div class="stats">
+          <div class="stat"><span>Categorii</span><b>10</b></div>
+          <div class="stat"><span>Niveluri</span><b>3</b></div>
+          <div class="stat"><span>Pe rundă</span><b>10</b></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

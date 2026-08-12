@@ -1,0 +1,17 @@
+node_modules/
+dist/
+*.local
+
+# Ieșiri de unelte locale
+.playwright-mcp/
+*.tsbuildinfo
+.vite/
+
+# Sistem
+.DS_Store
+Thumbs.db
+
+# Editoare
+.vscode/*
+!.vscode/extensions.json
+.idea/
