@@ -92,24 +92,27 @@ export function ArrowRight({ className = '' }: { className?: string }) {
   );
 }
 
-export function LinkIcon({ className = '' }: { className?: string }) {
+/** Pictograma de partajare: săgeată care iese din cutie. */
+export function ShareIcon({ className = '' }: { className?: string }) {
   return (
     <svg viewBox="0 0 20 20" className={className} aria-hidden="true" fill="none">
       <path
-        d="M8.5 11.5a3.4 3.4 0 0 0 5 .3l2-2a3.4 3.4 0 0 0-4.8-4.8l-1.1 1.1"
+        d="M10 2.6v9.2M6.6 5.9 10 2.5l3.4 3.4"
         stroke="currentColor"
-        strokeWidth="1.7"
+        strokeWidth="1.8"
         strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
-        d="M11.5 8.5a3.4 3.4 0 0 0-5-.3l-2 2a3.4 3.4 0 0 0 4.8 4.8l1.1-1.1"
+        d="M4.4 10.6v5.1c0 .9.7 1.6 1.6 1.6h8c.9 0 1.6-.7 1.6-1.6v-5.1"
         stroke="currentColor"
-        strokeWidth="1.7"
+        strokeWidth="1.8"
         strokeLinecap="round"
       />
     </svg>
   );
 }
+
 
 /** Bară subțire pentru defalcarea pe categorii — fără iconuri, doar proporție. */
 export function ScoreBar({ correct, total }: { correct: number; total: number }) {

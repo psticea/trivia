@@ -3,7 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { CATEGORY_BY_ID } from '../data/categories';
 import { DIFFICULTY_LABEL, OPTION_LETTERS, ro } from '../i18n/ro';
 import { TIMER_SECONDS, useGame } from '../store/useGame';
-import { ArrowRight, CheckMark, CrossMark, GhostNumeral, LinkIcon, ProgressRail } from './Motif';
+import { ArrowRight, CheckMark, CrossMark, GhostNumeral, ProgressRail, ShareIcon } from './Motif';
 
 export function QuestionScreen() {
   const round = useGame((s) => s.round);
@@ -98,33 +98,37 @@ export function QuestionScreen() {
               <span aria-hidden="true" className="text-line-hi">
                 /
               </span>
-              <span className="label truncate text-[0.75rem] text-faint sm:text-[0.8125rem]">
-                {DIFFICULTY_LABEL[question.difficulty]}
-              </span>
-            </div>
-
-            <div className="flex shrink-0 items-center gap-3 sm:gap-4">
               <p
-                className="label sr-only text-[0.75rem] text-faint sm:not-sr-only sm:text-[0.8125rem]"
+                className="label shrink-0 text-[0.75rem] text-faint sm:text-[0.8125rem]"
                 role="status"
                 aria-live="polite"
                 aria-label={ro.a11y.progressRegion}
               >
                 {ro.round.progressShort(index + 1, total)}
               </p>
+              <span aria-hidden="true" className="hidden text-line-hi sm:inline">
+                /
+              </span>
+              <span className="label hidden truncate text-[0.8125rem] text-faint sm:inline">
+                {DIFFICULTY_LABEL[question.difficulty]}
+              </span>
+            </div>
+
+            <div className="flex shrink-0 items-center gap-2 sm:gap-3">
               <button
                 type="button"
                 className={[
-                  'label flex min-h-11 items-center gap-1.5 text-[0.75rem] transition-colors sm:text-[0.8125rem]',
-                  invited ? 'text-accent-ink' : 'text-faint hover:text-text',
+                  'label flex min-h-10 items-center gap-1.5 rounded-full border px-3 text-[0.75rem] sm:text-[0.8125rem]',
+                  'transition-[background-color,border-color,color] duration-[var(--dur-fast)] ease-[var(--ease-out-expo)]',
+                  invited
+                    ? 'border-accent bg-accent text-on-accent'
+                    : 'border-accent/55 bg-accent-veil text-accent-ink hover:border-accent hover:bg-accent hover:text-on-accent',
                 ].join(' ')}
                 onClick={handleInvite}
                 aria-label={ro.round.inviteAria}
               >
-                {invited ? <CheckMark className="size-4" /> : <LinkIcon className="size-[18px]" />}
-                <span className={invited ? 'inline' : 'hidden sm:inline'}>
-                  {invited ? ro.round.inviteCopied : ro.round.invite}
-                </span>
+                {invited ? <CheckMark className="size-4" /> : <ShareIcon className="size-4" />}
+                <span>{invited ? ro.round.inviteCopied : ro.round.invite}</span>
               </button>
               <button
                 type="button"

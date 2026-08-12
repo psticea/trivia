@@ -243,6 +243,25 @@
     background: var(--color-surface);
   }
 
+  /* Partajarea e actiunea cu cea mai mare valoare pe un site public:
+     nu trebuie sa arate ca un buton oarecare, dar nici sa fure locul
+     actiunii principale. De aici conturul si textul in culoarea de accent. */
+  .btn-share {
+    background: var(--color-accent-veil);
+    border-color: var(--color-accent);
+    color: var(--color-accent-ink);
+  }
+
+  .btn-share:hover:not(:disabled) {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    transform: translateY(-1px);
+  }
+
+  .btn-share:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
   .btn:disabled {
     opacity: 0.28;
     cursor: default;

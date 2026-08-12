@@ -3,7 +3,7 @@ import { motion, useReducedMotion } from 'motion/react';
 import { CATEGORY_BY_ID } from '../data/categories';
 import { DIFFICULTY_LABEL, ro } from '../i18n/ro';
 import { useGame } from '../store/useGame';
-import { CheckMark, GhostNumeral, ScoreBar } from './Motif';
+import { CheckMark, GhostNumeral, ScoreBar, ShareIcon } from './Motif';
 
 function verdict(score: number, total: number): string {
   const ratio = score / total;
@@ -77,17 +77,19 @@ export function ResultsScreen() {
             <button type="button" className="btn btn-primary flex-1 sm:flex-none" onClick={goToReview}>
               {ro.results.review}
             </button>
+            <button type="button" className="btn btn-share flex-1 sm:flex-none" onClick={handleShare}>
+              {copied ? (
+                <>
+                  <CheckMark className="size-5" /> {ro.results.shareCopied}
+                </>
+              ) : (
+                <>
+                  <ShareIcon className="size-5" /> {ro.results.share}
+                </>
+              )}
+            </button>
             <button type="button" className="btn btn-ghost flex-1 sm:flex-none" onClick={goToStart}>
               {ro.results.playAgain}
-            </button>
-            <button type="button" className="btn btn-ghost flex-1 sm:flex-none" onClick={handleShare}>
-              {copied ? (
-                <span className="flex items-center gap-2 text-accent-ink">
-                  <CheckMark className="size-4" /> {ro.results.shareCopied}
-                </span>
-              ) : (
-                ro.results.share
-              )}
             </button>
           </div>
 
