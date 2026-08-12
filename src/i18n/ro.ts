@@ -7,13 +7,17 @@ export const ro = {
   meta: {
     title: 'Fișier de întrebări',
     tagline: 'Nouă sute de fișe despre lume și despre noi.',
-    subtitle: 'Zece întrebări pe rundă. Alegi nivelul, alegi domeniile, restul ține de tine.',
+    subtitle: 'Alegi nivelul, lungimea rundei și domeniile. Restul ține de tine.',
   },
 
   start: {
     play: 'Începe jocul',
     newRound: 'Joc nou',
     chooseDifficulty: 'Alege dificultatea',
+    roundLength: 'Câte întrebări',
+    roundLengthValue: (n: number) => `${n} întrebări`,
+    roundLengthHint: (n: number) =>
+      n === 10 ? 'O rundă scurtă, bună între două stații.' : 'Rundă dublă, pentru când ai timp.',
     categories: 'Categorii',
     allCategories: 'Toate categoriile',
     minWarning: 'Selectează cel puțin 3 categorii',
@@ -69,7 +73,7 @@ export const ro = {
     weak: 'Runda asta a fost a întrebărilor.',
     breakdown: 'Pe categorii',
     review: 'Revezi răspunsurile',
-    playAgain: 'Joacă din nou',
+    playAgain: 'Rundă nouă',
     share: 'Trimite provocarea',
     shareCopied: 'Link copiat',
     shareFallback: 'Copiază linkul de mai jos',
@@ -90,8 +94,8 @@ export const ro = {
     heading: 'Statistici',
     empty: 'Nicio rundă terminată încă. Statisticile apar după prima.',
     rounds: 'Runde',
-    average: 'Medie',
-    best: 'Cel mai bun',
+    average: 'Corecte',
+    best: 'Record',
     perDifficulty: 'Pe dificultăți',
     strongest: 'Cele mai bune categorii',
     weakest: 'Categoriile care îți dau bătăi de cap',

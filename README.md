@@ -1,12 +1,14 @@
 # Fișier de întrebări
 
-Un joc de trivia **în limba română**, gândit întâi pentru telefon: 900 de întrebări verificate, 10 categorii, 3 niveluri de dificultate, 10 întrebări pe rundă.
+Un joc de trivia **în limba română**, gândit întâi pentru telefon: 900 de întrebări verificate, 10 categorii, 3 niveluri de dificultate, runde de 10 sau 20 de întrebări.
 
 **Conceptul de design, într-o propoziție:** *un panou de control redus la esențial — fundal aproape negru, tipografie mare și un singur gest de culoare, verde citric, care înseamnă întotdeauna „corect”.* Fără ornament, fără umbre, fără sticlă. Există și o temă luminoasă, comutabilă din `Setări`.
 
 Site: <https://psticea.github.io/trivia/>
 
-**Provocări.** Orice rundă poate fi trimisă ca link, în două feluri: din timpul rundei (butonul `Invită`), ca să jucați aceleași zece întrebări în același timp, sau de la final, împreună cu scorul obținut. Linkul reproduce exact aceeași rundă — aceleași întrebări, în aceeași ordine, cu aceeași ordine a variantelor.
+**Provocări.** Orice rundă poate fi trimisă ca link, în două feluri: din timpul rundei (butonul `Invită`), ca să jucați aceleași întrebări în același timp, sau de la final, împreună cu scorul obținut. Linkul reproduce exact aceeași rundă — aceleași întrebări, în aceeași ordine, cu aceeași ordine a variantelor.
+
+**Statistici.** Recordurile se țin separat pe dificultăți și se compară procentual, ca 10 din 10 să nu fie depășit de 11 din 20.
 
 ---
 
@@ -49,7 +51,7 @@ src/
     categories.ts       cele 10 categorii și prefixele lor de id
     questions/*.ts      câte 90 de întrebări per categorie, un fișier fiecare
   game/                 logica jocului: pură, testabilă, fără React
-    select.ts           alegerea stratificată a celor 10 întrebări
+    select.ts           alegerea stratificată a întrebărilor unei runde
     round.ts            construirea rundei și ordinea opțiunilor
     scoring.ts          punctaj, defalcare pe categorii, statistici
     share.ts            codificarea rundei într-un link, cu sau fără scor
@@ -127,7 +129,7 @@ Ce verifică:
 | Echilibru `ro` | 25–35% global; 100% la Cultură Românească, 10–35% în rest; 20–40% în fiecare tier de dificultate |
 | Limbă | **zero caractere cu sedilă** în date *și* în interfață; semnalează diacriticele lipsă; semnalează întrebările peste 140 și opțiunile peste 60 de caractere |
 | Conținut | cvasi-duplicate, inclusiv între categorii; tell-ul de lungime; distribuția răspunsului corect; fraze interzise; procentul de întrebări negative |
-| Jucabilitate | pentru **fiecare** dificultate × **fiecare** combinație de 3 categorii (360 în total), confirmă că se pot extrage 10 întrebări unice |
+| Jucabilitate | pentru **fiecare** dificultate × **fiecare** combinație de 3 categorii × **fiecare** lungime de rundă (720 în total), confirmă că se pot extrage întrebări unice cât ține runda |
 
 Ultima verificare e cea mai importantă: prinde greșelile de distribuție pe care nicio recitire manuală nu le-ar găsi.
 
@@ -196,7 +198,7 @@ Cifre din ultima rulare a validatorului:
 28,1% subiecte românești · 900 din 900 cu sursă
 răspunsul corect e cea mai lungă opțiune în 27,4% din cazuri (prag 35%)
 0 întrebări negative · 0 avertismente
-360 de combinații dificultate × 3 categorii, toate jucabile
+720 de combinații dificultate × 3 categorii × lungime de rundă, toate jucabile
 ```
 
 ---

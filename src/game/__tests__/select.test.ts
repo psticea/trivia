@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { CATEGORY_IDS } from '../../data/categories';
 import type { CategoryId, Difficulty, Question } from '../../data/types';
-import { allocate, poolSize, selectRound, type SeenMap } from '../select';
+import { allocate, poolSize, ROUND_SIZES, selectRound, type SeenMap } from '../select';
 import { mulberry32 } from '../rng';
 
 function makeQuestion(category: CategoryId, difficulty: Difficulty, n: number): Question {
@@ -80,6 +80,29 @@ describe('selectRound', () => {
         expect(questions.every((q) => q.difficulty === d)).toBe(true);
         expect(questions.every((q) => trio.includes(q.category))).toBe(true);
       }
+    }
+  });
+
+  it('dă și runde de 20 de întrebări unice, inclusiv la minimul de 3 categorii', () => {
+    const trios = combinations(CATEGORY_IDS, 3);
+    let seed = 5000;
+    for (const d of ['usor', 'mediu', 'dificil'] as Difficulty[]) {
+      for (const trio of trios) {
+        seed += 1;
+        const { questions } = selectRound({ all: DB, difficulty: d, categories: trio, seed, count: 20 });
+        expect(questions).toHaveLength(20);
+        expect(new Set(questions.map((q) => q.id)).size).toBe(20);
+        expect(questions.every((q) => q.difficulty === d)).toBe(true);
+      }
+    }
+  });
+
+  it('stratifică o rundă de 20 peste 3 categorii, fără aglomerări', () => {
+    const trio = CATEGORY_IDS.slice(0, 3);
+    for (let seed = 1; seed <= 15; seed += 1) {
+      const { questions } = selectRound({ all: DB, difficulty: 'mediu', categories: trio, seed, count: 20 });
+      const counts = trio.map((c) => questions.filter((q) => q.category === c).length).sort();
+      expect(counts).toEqual([6, 7, 7]);
     }
   });
 
@@ -221,5 +244,14 @@ describe('poolSize', () => {
     expect(poolSize(DB, 'usor', ['istorie'])).toBe(30);
     expect(poolSize(DB, 'usor', ['istorie', 'sport', 'film'])).toBe(90);
     expect(poolSize(DB, 'dificil', [])).toBe(0);
+  });
+
+  it('acoperă cea mai mare rundă oferită, chiar la minimul de 3 categorii', () => {
+    const largest = Math.max(...ROUND_SIZES);
+    for (const trio of combinations(CATEGORY_IDS, 3)) {
+      for (const d of ['usor', 'mediu', 'dificil'] as Difficulty[]) {
+        expect(poolSize(DB, d, trio)).toBeGreaterThanOrEqual(largest);
+      }
+    }
   });
 });

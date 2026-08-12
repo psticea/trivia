@@ -2,6 +2,8 @@ import type { CategoryId, Difficulty, Question } from '../data/types';
 import { mulberry32, shuffle, type Rng } from './rng';
 
 export const ROUND_SIZE = 10;
+export const ROUND_SIZES = [10, 20] as const;
+export type RoundSize = (typeof ROUND_SIZES)[number];
 export const MIN_CATEGORIES = 3;
 
 export type SeenMap = Record<string, number>;

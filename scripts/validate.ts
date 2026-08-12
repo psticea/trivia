@@ -14,7 +14,7 @@ import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { CATEGORIES, CATEGORY_IDS } from '../src/data/categories';
 import type { CategoryId, Difficulty, Question } from '../src/data/types';
-import { poolSize, selectRound } from '../src/game/select';
+import { poolSize, ROUND_SIZES, selectRound } from '../src/game/select';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 
@@ -350,7 +350,8 @@ function checkContent(all: Question[], full: boolean) {
   if (near > 15) warn(`… încă ${near - 15} perechi similare nelistate.`);
 
   if (full) {
-    // Simulare de jucabilitate: fiecare dificultate × fiecare combinație de 3 categorii
+    // Simulare de jucabilitate: fiecare dificultate × fiecare combinație de 3 categorii,
+    // pentru ambele lungimi de rundă oferite în interfață.
     const combos: CategoryId[][] = [];
     for (let a = 0; a < CATEGORY_IDS.length; a += 1)
       for (let b = a + 1; b < CATEGORY_IDS.length; b += 1)
@@ -358,21 +359,33 @@ function checkContent(all: Question[], full: boolean) {
           combos.push([CATEGORY_IDS[a], CATEGORY_IDS[b], CATEGORY_IDS[c]]);
 
     let checked = 0;
-    for (const d of DIFFICULTIES) {
-      for (const combo of combos) {
-        const size = poolSize(all, d, combo);
-        if (size < 10) {
-          fail(`Jucabilitate: ${d} × [${combo.join(', ')}] are doar ${size} întrebări.`);
-          continue;
+    for (const size of ROUND_SIZES) {
+      for (const d of DIFFICULTIES) {
+        for (const combo of combos) {
+          const available = poolSize(all, d, combo);
+          if (available < size) {
+            fail(`Jucabilitate: ${d} × [${combo.join(', ')}] are doar ${available} întrebări, sub ${size}.`);
+            continue;
+          }
+          const { questions } = selectRound({
+            all,
+            difficulty: d,
+            categories: combo,
+            seed: 1234 + checked,
+            count: size,
+          });
+          if (questions.length !== size || new Set(questions.map((q) => q.id)).size !== size) {
+            fail(`Jucabilitate: ${d} × [${combo.join(', ')}] nu produce ${size} întrebări unice.`);
+          }
+          checked += 1;
         }
-        const { questions } = selectRound({ all, difficulty: d, categories: combo, seed: 1234 + checked });
-        if (questions.length !== 10 || new Set(questions.map((q) => q.id)).size !== 10) {
-          fail(`Jucabilitate: ${d} × [${combo.join(', ')}] nu produce 10 întrebări unice.`);
-        }
-        checked += 1;
       }
     }
-    if (!QUIET) console.log(`  Simulare jucabilitate: ${checked} combinații dificultate × 3 categorii — OK`);
+    if (!QUIET) {
+      console.log(
+        `  Simulare jucabilitate: ${checked} combinații (dificultate × 3 categorii × lungime de rundă) — OK`,
+      );
+    }
   }
 }
 

@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import { CATEGORY_BY_ID } from '../data/categories';
 import type { Difficulty } from '../data/types';
 import { DIFFICULTY_LABEL, ro } from '../i18n/ro';
-import { averageScore, rankedCategories } from '../game/scoring';
+import { accuracy, rankedCategories } from '../game/scoring';
 import { useGame } from '../store/useGame';
 import type { Theme } from '../theme';
 
-/** Dialog nativ: focus trap, Escape È™i rol ARIA fÄƒrÄƒ bibliotecÄƒ suplimentarÄƒ. */
+/** Dialog nativ: focus trap, Escape și rol ARIA fără bibliotecă suplimentară. */
 function Sheet({
   open,
   onClose,
@@ -71,27 +71,27 @@ export function StatsDialog({ open, onClose }: { open: boolean; onClose: () => v
           <ul className="mt-4 space-y-2.5">
             {tiers.map((t) => {
               const s = stats.byDifficulty[t];
-              const avg = averageScore(s);
+              const acc = accuracy(s);
               return (
                 <li
                   key={t}
                   className="flex items-center gap-4 rounded-md border border-line bg-surface px-4 py-4"
                 >
                   <span className="flex-1 text-[1.125rem] font-semibold text-text">{DIFFICULTY_LABEL[t]}</span>
-                  <span className="w-16 text-right">
+                  <span className="w-14 text-right">
                     <span className="label block text-faint">{ro.stats.rounds}</span>
                     <span className="numeral text-[1.25rem] text-text">{s.rounds}</span>
                   </span>
                   <span className="w-16 text-right">
                     <span className="label block text-faint">{ro.stats.average}</span>
                     <span className="numeral text-[1.25rem] text-text">
-                      {avg === null ? 'â€”' : avg.toFixed(1)}
+                      {acc === null ? '—' : `${Math.round(acc * 100)}%`}
                     </span>
                   </span>
-                  <span className="w-16 text-right">
+                  <span className="w-20 text-right">
                     <span className="label block text-faint">{ro.stats.best}</span>
                     <span className="numeral text-[1.25rem] text-accent-ink">
-                      {s.rounds === 0 ? 'â€”' : s.best}
+                      {s.rounds === 0 ? '—' : `${s.best}/${s.bestTotal}`}
                     </span>
                   </span>
                 </li>

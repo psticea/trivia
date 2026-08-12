@@ -18,7 +18,6 @@ export function ResultsScreen() {
   const round = useGame((s) => s.round);
   const isRecord = useGame((s) => s.isRecord);
   const goToReview = useGame((s) => s.goToReview);
-  const startRound = useGame((s) => s.startRound);
   const goToStart = useGame((s) => s.goToStart);
   const shareLink = useGame((s) => s.shareLink);
 
@@ -78,7 +77,7 @@ export function ResultsScreen() {
             <button type="button" className="btn btn-primary flex-1 sm:flex-none" onClick={goToReview}>
               {ro.results.review}
             </button>
-            <button type="button" className="btn btn-ghost flex-1 sm:flex-none" onClick={startRound}>
+            <button type="button" className="btn btn-ghost flex-1 sm:flex-none" onClick={goToStart}>
               {ro.results.playAgain}
             </button>
             <button type="button" className="btn btn-ghost flex-1 sm:flex-none" onClick={handleShare}>
@@ -103,14 +102,6 @@ export function ResultsScreen() {
               />
             </div>
           )}
-
-          <button
-            type="button"
-            className="mt-7 block text-[1.0625rem] font-semibold text-faint underline-offset-4 transition-colors hover:text-text hover:underline"
-            onClick={goToStart}
-          >
-            {ro.results.backToStart}
-          </button>
         </section>
 
         {/* ── Defalcarea pe categorii ── */}

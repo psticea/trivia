@@ -43,7 +43,9 @@ export type DifficultyStats = {
   rounds: number;
   totalCorrect: number;
   totalQuestions: number;
+  /** Cel mai bun rezultat, păstrat ca pereche: 10/10 nu e sub 11/20. */
   best: number;
+  bestTotal: number;
 };
 
 export type CategoryStats = {
@@ -58,11 +60,29 @@ export type Stats = {
 };
 
 export function emptyStats(): Stats {
-  const blank = (): DifficultyStats => ({ rounds: 0, totalCorrect: 0, totalQuestions: 0, best: 0 });
+  const blank = (): DifficultyStats => ({
+    rounds: 0,
+    totalCorrect: 0,
+    totalQuestions: 0,
+    best: 0,
+    bestTotal: 0,
+  });
   return {
     byDifficulty: { usor: blank(), mediu: blank(), dificil: blank() },
     byCategory: {},
   };
+}
+
+/**
+ * Compară două rezultate de lungimi diferite: întâi procentajul, apoi lungimea.
+ * Astfel 10/10 rămâne peste 11/20, iar 20/20 peste 10/10.
+ */
+export function isBetterScore(score: number, total: number, best: number, bestTotal: number): boolean {
+  if (bestTotal === 0) return true;
+  const a = score / total;
+  const b = best / bestTotal;
+  if (a !== b) return a > b;
+  return total > bestTotal;
 }
 
 export function applyResult(stats: Stats, result: RoundResult): Stats {
@@ -75,12 +95,15 @@ export function applyResult(stats: Stats, result: RoundResult): Stats {
     totalCorrect: 0,
     totalQuestions: 0,
     best: 0,
+    bestTotal: 0,
   };
+  const better = isBetterScore(result.score, result.total, prev.best, prev.bestTotal);
   next.byDifficulty[result.difficulty] = {
     rounds: prev.rounds + 1,
     totalCorrect: prev.totalCorrect + result.score,
     totalQuestions: prev.totalQuestions + result.total,
-    best: Math.max(prev.best, result.score),
+    best: better ? result.score : prev.best,
+    bestTotal: better ? result.total : prev.bestTotal,
   };
   for (const row of result.breakdown) {
     const cur = next.byCategory[row.category] ?? { correct: 0, total: 0 };
@@ -95,6 +118,12 @@ export function applyResult(stats: Stats, result: RoundResult): Stats {
 export function averageScore(stats: DifficultyStats): number | null {
   if (stats.rounds === 0) return null;
   return stats.totalCorrect / stats.rounds;
+}
+
+/** Procentul de răspunsuri corecte — singura medie comparabilă între runde de lungimi diferite. */
+export function accuracy(stats: DifficultyStats): number | null {
+  if (stats.totalQuestions === 0) return null;
+  return stats.totalCorrect / stats.totalQuestions;
 }
 
 /** Categoriile cu cel puțin `minAnswered` răspunsuri, ordonate după procentaj. */

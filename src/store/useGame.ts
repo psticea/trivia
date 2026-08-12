@@ -4,10 +4,11 @@ import { CATEGORY_IDS } from '../data/categories';
 import type { CategoryId, Difficulty } from '../data/types';
 import { buildRound, buildRoundFromIds, type AnswerRecord, type Round } from '../game/round';
 import { randomSeed } from '../game/rng';
-import { MIN_CATEGORIES, ROUND_SIZE, type SeenMap } from '../game/select';
+import { MIN_CATEGORIES, ROUND_SIZE, ROUND_SIZES, type RoundSize, type SeenMap } from '../game/select';
 import {
   applyResult,
   emptyStats,
+  isBetterScore,
   scoreRound,
   type RoundResult,
   type Stats,
@@ -28,6 +29,7 @@ type GameState = {
   screen: Screen;
   difficulty: Difficulty;
   categories: CategoryId[];
+  roundSize: RoundSize;
   timerEnabled: boolean;
   theme: Theme;
 
@@ -52,6 +54,7 @@ type GameState = {
   challenge: SharePayload | null;
 
   setDifficulty: (d: Difficulty) => void;
+  setRoundSize: (n: RoundSize) => void;
   toggleCategory: (c: CategoryId) => void;
   selectAllCategories: () => void;
   setTimerEnabled: (on: boolean) => void;
@@ -87,6 +90,33 @@ function loadDifficulty(): Difficulty {
   return stored === 'usor' || stored === 'mediu' || stored === 'dificil' ? stored : 'mediu';
 }
 
+function loadRoundSize(): RoundSize {
+  const stored = readJson<number>(KEYS.roundSize, ROUND_SIZE);
+  return (ROUND_SIZES as readonly number[]).includes(stored) ? (stored as RoundSize) : ROUND_SIZE;
+}
+
+/**
+ * Statisticile salvate înainte de rundele de 20 nu au câmpul `bestTotal`.
+ * Pe atunci exista o singură lungime de rundă, deci recordul era din 10.
+ */
+function loadStats(): Stats {
+  const stored = readJson<Stats>(KEYS.stats, emptyStats());
+  const base = emptyStats();
+  const byDifficulty = { ...base.byDifficulty };
+  for (const tier of ['usor', 'mediu', 'dificil'] as Difficulty[]) {
+    const s = stored.byDifficulty?.[tier];
+    if (!s) continue;
+    byDifficulty[tier] = {
+      rounds: s.rounds ?? 0,
+      totalCorrect: s.totalCorrect ?? 0,
+      totalQuestions: s.totalQuestions ?? 0,
+      best: s.best ?? 0,
+      bestTotal: s.bestTotal ?? (s.rounds > 0 ? ROUND_SIZE : 0),
+    };
+  }
+  return { byDifficulty, byCategory: stored.byCategory ?? {} };
+}
+
 function readChallenge(): SharePayload | null {
   if (typeof window === 'undefined') return null;
   const token = readShareToken(window.location.hash);
@@ -100,6 +130,7 @@ export const useGame = create<GameState>((set, get) => ({
   screen: 'start',
   difficulty: loadDifficulty(),
   categories: loadCategories(),
+  roundSize: loadRoundSize(),
   timerEnabled: readJson<boolean>(KEYS.timer, false),
   theme: readTheme(),
 
@@ -117,7 +148,7 @@ export const useGame = create<GameState>((set, get) => ({
   isRecord: false,
   poolRecycled: false,
 
-  stats: readJson<Stats>(KEYS.stats, emptyStats()),
+  stats: loadStats(),
   seen: readJson<SeenMap>(KEYS.seen, {}),
   seenCounter: readJson<number>(KEYS.seenCounter, 0),
 
@@ -126,6 +157,11 @@ export const useGame = create<GameState>((set, get) => ({
   setDifficulty: (difficulty) => {
     writeJson(KEYS.difficulty, difficulty);
     set({ difficulty });
+  },
+
+  setRoundSize: (roundSize) => {
+    writeJson(KEYS.roundSize, roundSize);
+    set({ roundSize });
   },
 
   toggleCategory: (category) => {
@@ -155,13 +191,14 @@ export const useGame = create<GameState>((set, get) => ({
   },
 
   startRound: () => {
-    const { difficulty, categories, seen, seenCounter } = get();
+    const { difficulty, categories, seen, seenCounter, roundSize } = get();
     const { round, exhausted } = buildRound({
       all: QUESTIONS,
       difficulty,
       categories,
       seen,
       seed: randomSeed(),
+      count: roundSize,
     });
     if (round.items.length === 0) return;
     const { seen: nextSeen, counter } = markSeen(exhausted ? {} : seen, seenCounter, round);
@@ -273,8 +310,13 @@ export const useGame = create<GameState>((set, get) => ({
 
     const result = scoreRound(state.round, state.answers);
     const previous = state.stats.byDifficulty[result.difficulty];
-    const previousBest = previous?.best ?? 0;
     const previousRounds = previous?.rounds ?? 0;
+    const beatsPrevious = isBetterScore(
+      result.score,
+      result.total,
+      previous?.best ?? 0,
+      previous?.bestTotal ?? 0,
+    );
     const stats = applyResult(state.stats, result);
     writeJson(KEYS.stats, stats);
     set({
@@ -282,7 +324,7 @@ export const useGame = create<GameState>((set, get) => ({
       result,
       stats,
       // Prima rundă la o dificultate nu e „record”, oricât de bine ar merge.
-      isRecord: previousRounds > 0 && result.score > previousBest,
+      isRecord: previousRounds > 0 && beatsPrevious,
     });
   },
 
@@ -359,6 +401,7 @@ export const useGame = create<GameState>((set, get) => ({
       categories: [...CATEGORY_IDS],
       timerEnabled: false,
       theme: 'dark',
+      roundSize: ROUND_SIZE,
     });
   },
 }));
@@ -375,4 +418,5 @@ function markSeen(seen: SeenMap, counter: number, round: Round): { seen: SeenMap
   return { seen: next, counter: c };
 }
 
-export { ROUND_SIZE, MIN_CATEGORIES };
+export { ROUND_SIZE, ROUND_SIZES, MIN_CATEGORIES };
+export type { RoundSize };

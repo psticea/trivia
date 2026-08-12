@@ -2,7 +2,7 @@ import { CATEGORIES } from '../data/categories';
 import { QUESTION_COUNT } from '../data';
 import type { Difficulty } from '../data/types';
 import { ro } from '../i18n/ro';
-import { MIN_CATEGORIES, useGame } from '../store/useGame';
+import { MIN_CATEGORIES, ROUND_SIZES, useGame } from '../store/useGame';
 import { ArrowRight, CheckMark, GhostNumeral } from './Motif';
 
 const DIFFICULTIES: { id: Difficulty; label: string; hint: string }[] = [
@@ -14,8 +14,10 @@ const DIFFICULTIES: { id: Difficulty; label: string; hint: string }[] = [
 export function StartScreen() {
   const difficulty = useGame((s) => s.difficulty);
   const categories = useGame((s) => s.categories);
+  const roundSize = useGame((s) => s.roundSize);
   const challenge = useGame((s) => s.challenge);
   const setDifficulty = useGame((s) => s.setDifficulty);
+  const setRoundSize = useGame((s) => s.setRoundSize);
   const toggleCategory = useGame((s) => s.toggleCategory);
   const selectAllCategories = useGame((s) => s.selectAllCategories);
   const startRound = useGame((s) => s.startRound);
@@ -72,7 +74,7 @@ export function StartScreen() {
             {[
               { label: ro.start.fondLabel, value: QUESTION_COUNT },
               { label: 'Categorii', value: 10 },
-              { label: 'Pe rundă', value: 10 },
+              { label: 'Pe rundă', value: roundSize },
             ].map((stat) => (
               <div key={stat.label}>
                 <dt className="label text-faint">{stat.label}</dt>
@@ -115,6 +117,38 @@ export function StartScreen() {
               })}
             </div>
             <p className="mt-3.5 pl-1 text-[1.125rem] text-faint">{activeHint}</p>
+          </fieldset>
+
+          <fieldset className="mt-10 border-0 p-0">
+            <legend className="label text-faint">{ro.start.roundLength}</legend>
+            <div className="relative mt-4 grid grid-cols-2 rounded-full border border-line bg-surface p-1.5">
+              <span
+                aria-hidden="true"
+                className="absolute inset-y-1.5 left-1.5 rounded-full bg-accent transition-transform duration-[var(--dur-slow)] ease-[var(--ease-out-expo)]"
+                style={{
+                  width: 'calc((100% - 0.75rem) / 2)',
+                  transform: `translateX(${ROUND_SIZES.indexOf(roundSize) * 100}%)`,
+                }}
+              />
+              {ROUND_SIZES.map((n) => {
+                const active = n === roundSize;
+                return (
+                  <button
+                    key={n}
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() => setRoundSize(n)}
+                    className={[
+                      'relative z-10 min-h-14 rounded-full px-2 text-[1.125rem] font-semibold transition-colors duration-[var(--dur-fast)]',
+                      active ? 'text-on-accent' : 'text-dim hover:text-text',
+                    ].join(' ')}
+                  >
+                    {ro.start.roundLengthValue(n)}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="mt-3.5 pl-1 text-[1.125rem] text-faint">{ro.start.roundLengthHint(roundSize)}</p>
           </fieldset>
 
           <div className="mt-12">

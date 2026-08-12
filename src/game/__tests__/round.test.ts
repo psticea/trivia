@@ -1,7 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import type { CategoryId, Difficulty, Question } from '../../data/types';
 import { buildRound, buildRoundFromIds, optionOrderFor, type AnswerRecord } from '../round';
-import { applyResult, averageScore, emptyStats, rankedCategories, scoreRound } from '../scoring';
+import {
+  accuracy,
+  applyResult,
+  averageScore,
+  emptyStats,
+  isBetterScore,
+  rankedCategories,
+  scoreRound,
+} from '../scoring';
 import { decodeShare, encodeShare, readShareToken, shareUrl } from '../share';
 
 function q(id: string, category: CategoryId, difficulty: Difficulty, correctIndex: 0 | 1 | 2 | 3): Question {
@@ -150,6 +158,7 @@ describe('statistici', () => {
     expect(stats.byDifficulty.dificil.best).toBe(4);
     expect(stats.byDifficulty.mediu.rounds).toBe(0);
     expect(averageScore(stats.byDifficulty.mediu)).toBeNull();
+    expect(accuracy(stats.byDifficulty.mediu)).toBeNull();
   });
 
   it('calculează media pe mai multe runde', () => {
@@ -157,7 +166,34 @@ describe('statistici', () => {
     stats = applyResult(stats, { score: 6, total: 10, difficulty: 'mediu', breakdown: [] });
     stats = applyResult(stats, { score: 8, total: 10, difficulty: 'mediu', breakdown: [] });
     expect(averageScore(stats.byDifficulty.mediu)).toBe(7);
+    expect(accuracy(stats.byDifficulty.mediu)).toBe(0.7);
     expect(stats.byDifficulty.mediu.best).toBe(8);
+    expect(stats.byDifficulty.mediu.bestTotal).toBe(10);
+  });
+
+  it('compară recordurile pe procentaj, nu pe scor brut', () => {
+    // 11 din 20 nu bate 10 din 10, oricât de mare ar fi cifra.
+    expect(isBetterScore(11, 20, 10, 10)).toBe(false);
+    expect(isBetterScore(10, 10, 11, 20)).toBe(true);
+    // La procentaj egal, runda mai lungă e realizarea mai mare.
+    expect(isBetterScore(20, 20, 10, 10)).toBe(true);
+    expect(isBetterScore(10, 10, 20, 20)).toBe(false);
+    // Primul rezultat devine automat record.
+    expect(isBetterScore(0, 10, 0, 0)).toBe(true);
+  });
+
+  it('păstrează recordul procentual când se joacă runde de lungimi diferite', () => {
+    let stats = emptyStats();
+    stats = applyResult(stats, { score: 10, total: 10, difficulty: 'mediu', breakdown: [] });
+    stats = applyResult(stats, { score: 11, total: 20, difficulty: 'mediu', breakdown: [] });
+    expect(stats.byDifficulty.mediu.best).toBe(10);
+    expect(stats.byDifficulty.mediu.bestTotal).toBe(10);
+    expect(stats.byDifficulty.mediu.totalQuestions).toBe(30);
+    expect(accuracy(stats.byDifficulty.mediu)).toBe(21 / 30);
+
+    stats = applyResult(stats, { score: 20, total: 20, difficulty: 'mediu', breakdown: [] });
+    expect(stats.byDifficulty.mediu.best).toBe(20);
+    expect(stats.byDifficulty.mediu.bestTotal).toBe(20);
   });
 
   it('cumulează pe categorii și le ordonează după procentaj', () => {

@@ -41,4 +41,5 @@ export const KEYS = {
   stats: 'stats',
   timer: 'timer',
   theme: 'theme',
+  roundSize: 'round-size',
 } as const;
