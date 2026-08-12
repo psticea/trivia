@@ -31,9 +31,32 @@ export function StartScreen() {
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start lg:gap-20">
         {/* ── Titlul ── */}
         <header className="relative lg:sticky lg:top-16">
+          {/* Provocarea primează: apare prima, înaintea titlului. */}
+          {challenge && (
+            <section className="relative mt-2 rounded-lg border border-accent bg-accent-veil p-5 sm:p-6">
+              <p className="label text-accent-ink">{ro.start.challengeIntro}</p>
+              <p className="mt-2.5 text-[1.125rem] leading-snug text-text">
+                {challenge.score === null
+                  ? ro.start.challengeDetailOpen(challenge.questionIds.length)
+                  : ro.start.challengeDetail(challenge.score, challenge.questionIds.length)}
+              </p>
+              <button type="button" className="btn btn-primary mt-5 w-full sm:w-auto" onClick={acceptChallenge}>
+                {ro.start.challengeStart}
+                <ArrowRight className="size-5" />
+              </button>
+              <button
+                type="button"
+                className="mt-4 block text-[1.0625rem] font-semibold text-dim underline-offset-4 transition-colors hover:text-text hover:underline"
+                onClick={dismissChallenge}
+              >
+                {ro.start.challengeDismiss}
+              </button>
+            </section>
+          )}
+
           <GhostNumeral
             value={QUESTION_COUNT}
-            className="-top-4 -right-2 text-[9rem] sm:text-[13rem] lg:-top-10 lg:text-[16rem]"
+            className={`-right-2 text-[9rem] sm:text-[13rem] lg:text-[16rem] ${challenge ? 'top-52 sm:top-56' : '-top-4 lg:-top-10'}`}
           />
 
           <h1 className="relative mt-10 text-[clamp(3.4rem,15.5vw,6rem)] text-text lg:mt-14">
@@ -57,29 +80,11 @@ export function StartScreen() {
               </div>
             ))}
           </dl>
-
-          {challenge && (
-            <section className="relative mt-8 rounded-lg border border-accent bg-accent-veil p-5 sm:p-6">
-              <p className="label text-accent-ink">{ro.start.challengeIntro}</p>
-              <p className="mt-2.5 text-[1.125rem] leading-snug text-text">
-                {challenge.score === null
-                  ? ro.start.challengeDetailOpen(challenge.questionIds.length)
-                  : ro.start.challengeDetail(challenge.score, challenge.questionIds.length)}
-              </p>
-              <div className="mt-5 flex flex-wrap gap-3">
-                <button type="button" className="btn btn-primary" onClick={acceptChallenge}>
-                  {ro.start.challengeStart}
-                </button>
-                <button type="button" className="btn btn-ghost" onClick={dismissChallenge}>
-                  {ro.start.challengeDismiss}
-                </button>
-              </div>
-            </section>
-          )}
         </header>
 
         {/* ── Configurarea rundei ── */}
         <section className="mt-14 lg:mt-16">
+          {challenge && <p className="mb-6 text-[1rem] leading-snug text-faint">{ro.start.settingsApplyToNewRound}</p>}
           <fieldset className="border-0 p-0">
             <legend className="label text-faint">{ro.start.chooseDifficulty}</legend>
             <div className="relative mt-4 grid grid-cols-3 rounded-full border border-line bg-surface p-1.5">
@@ -179,22 +184,51 @@ export function StartScreen() {
           </div>
 
           <div className="mt-12 hidden lg:block">
-            <button type="button" className="btn btn-primary w-full" onClick={startRound}>
-              {ro.start.play}
-              <ArrowRight className="size-5" />
-            </button>
+            {challenge ? (
+              <div className="flex gap-3">
+                <button type="button" className="btn btn-primary flex-1" onClick={acceptChallenge}>
+                  {ro.start.challengeStart}
+                  <ArrowRight className="size-5" />
+                </button>
+                <button type="button" className="btn btn-ghost shrink-0" onClick={startRound}>
+                  {ro.start.newRound}
+                </button>
+              </div>
+            ) : (
+              <button type="button" className="btn btn-primary w-full" onClick={startRound}>
+                {ro.start.play}
+                <ArrowRight className="size-5" />
+              </button>
+            )}
           </div>
         </section>
       </div>
 
-      {/* O rundă implicită rămâne la un singur tap, indiferent cât ai derulat. */}
+      {/* Bara fixă urmează aceeași ierarhie: provocarea e acțiunea principală. */}
       <div className="pointer-events-none fixed inset-x-0 bottom-0 z-20 lg:hidden">
         <div className="h-12 bg-gradient-to-t from-bg to-transparent" />
         <div className="pointer-events-auto bg-bg px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-1">
-          <button type="button" className="btn btn-primary w-full" onClick={startRound}>
-            {ro.start.play}
-            <ArrowRight className="size-5" />
-          </button>
+          {challenge ? (
+            <div className="flex gap-2.5">
+              <button
+                type="button"
+                className="btn btn-primary min-w-0 flex-1 px-4 whitespace-nowrap"
+                onClick={acceptChallenge}
+              >
+                <span className="hidden xs:inline">{ro.start.challengeStart}</span>
+                <span className="xs:hidden">{ro.start.challengeStartShort}</span>
+                <ArrowRight className="size-5" />
+              </button>
+              <button type="button" className="btn btn-ghost shrink-0 px-5 whitespace-nowrap" onClick={startRound}>
+                {ro.start.newRound}
+              </button>
+            </div>
+          ) : (
+            <button type="button" className="btn btn-primary w-full" onClick={startRound}>
+              {ro.start.play}
+              <ArrowRight className="size-5" />
+            </button>
+          )}
         </div>
       </div>
     </div>

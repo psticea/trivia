@@ -95,6 +95,9 @@
   --radius-md: 10px;
   --radius-full: 999px;
 
+  /* Prag suplimentar pentru telefoanele mici (sub 400 px). */
+  --breakpoint-xs: 400px;
+
   /* O singură curbă, două durate: mișcarea nu trebuie să se facă remarcată. */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --dur-fast: 140ms;

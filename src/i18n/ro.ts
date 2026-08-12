@@ -26,7 +26,10 @@ export const ro = {
     challengeDetailOpen: (total: number) =>
       `Primești exact aceleași ${total} întrebări, în aceeași ordine. Jucați runda în același timp.`,
     challengeStart: 'Acceptă provocarea',
+    challengeStartShort: 'Acceptă',
     challengeDismiss: 'Nu, vreau o rundă nouă',
+    settingsApplyToNewRound:
+      'Setările de mai jos sunt pentru o rundă nouă. Provocarea vine cu întrebările ei, deja fixate.',
   },
 
   difficulty: {
