@@ -2,21 +2,16 @@ import { useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { CATEGORY_BY_ID } from '../data/categories';
 import { DIFFICULTY_LABEL, ro } from '../i18n/ro';
+import { verdictFor } from '../i18n/verdicts';
+import { averagePerQuestion, formatDuration } from '../game/duration';
 import { useGame } from '../store/useGame';
 import { CheckMark, GhostNumeral, ScoreBar, ShareIcon } from './Motif';
-
-function verdict(score: number, total: number): string {
-  const ratio = score / total;
-  if (score === total) return ro.results.perfect;
-  if (ratio >= 0.7) return ro.results.strong;
-  if (ratio >= 0.4) return ro.results.fair;
-  return ro.results.weak;
-}
 
 export function ResultsScreen() {
   const result = useGame((s) => s.result);
   const round = useGame((s) => s.round);
   const isRecord = useGame((s) => s.isRecord);
+  const elapsedMs = useGame((s) => s.elapsedMs);
   const goToReview = useGame((s) => s.goToReview);
   const goToStart = useGame((s) => s.goToStart);
   const shareLink = useGame((s) => s.shareLink);
@@ -26,6 +21,10 @@ export function ResultsScreen() {
   const [fallbackUrl, setFallbackUrl] = useState<string | null>(null);
 
   if (!result || !round) return null;
+
+  // Verdictul e legat de sămânța rundei, ca să nu se schimbe la re-randare.
+  const verdict = verdictFor(result.score, result.total, round.seed);
+  const perQuestion = elapsedMs === null ? null : averagePerQuestion(elapsedMs, result.total);
 
   async function handleShare() {
     const link = shareLink();
@@ -60,12 +59,31 @@ export function ResultsScreen() {
             </span>
           </div>
 
-          <h1 className="mt-6 text-[clamp(1.9rem,7.5vw,2.9rem)] text-text">{verdict(result.score, result.total)}</h1>
+          <h1 className="mt-6 text-[clamp(1.9rem,7.5vw,2.9rem)] text-text">{verdict}</h1>
           <p className="mt-3 text-[1.125rem] text-dim sm:text-[1.1875rem]">
             {ro.results.scoreLine(result.score, result.total)}
             <span className="mx-2 text-line-hi">/</span>
             {DIFFICULTY_LABEL[result.difficulty]}
           </p>
+
+          {elapsedMs !== null && (
+            <p className="mt-5 flex flex-wrap items-baseline gap-x-2.5 gap-y-1 font-mono text-[0.9375rem] tracking-[0.02em] text-dim">
+              <span className="whitespace-nowrap">
+                {ro.results.duration} <span className="font-semibold text-text">{formatDuration(elapsedMs)}</span>
+              </span>
+              {perQuestion && (
+                <>
+                  <span aria-hidden="true" className="text-line-hi">
+                    ·
+                  </span>
+                  <span className="whitespace-nowrap">
+                    {ro.results.perQuestionPrefix} <span className="font-semibold text-text">{perQuestion}</span>{' '}
+                    {ro.results.perQuestionSuffix}
+                  </span>
+                </>
+              )}
+            </p>
+          )}
 
           {isRecord && (
             <p className="label mt-5 inline-flex items-center gap-2 rounded-full border border-accent bg-accent-veil px-4 py-2 text-accent-ink">

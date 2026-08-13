@@ -46,6 +46,9 @@ type GameState = {
   result: RoundResult | null;
   isRecord: boolean;
   poolRecycled: boolean;
+  /** Momentul pornirii rundei, ca să putem arăta cât a durat la final. */
+  roundStartedAt: number | null;
+  elapsedMs: number | null;
 
   stats: Stats;
   seen: SeenMap;
@@ -147,6 +150,8 @@ export const useGame = create<GameState>((set, get) => ({
   result: null,
   isRecord: false,
   poolRecycled: false,
+  roundStartedAt: null,
+  elapsedMs: null,
 
   stats: loadStats(),
   seen: readJson<SeenMap>(KEYS.seen, {}),
@@ -213,6 +218,8 @@ export const useGame = create<GameState>((set, get) => ({
       result: null,
       isRecord: false,
       poolRecycled: exhausted,
+      roundStartedAt: Date.now(),
+      elapsedMs: null,
       inputLockedUntil: Date.now() + TRANSITION_LOCK_MS,
       advanceUnlockAt: 0,
       seen: nextSeen,
@@ -249,6 +256,8 @@ export const useGame = create<GameState>((set, get) => ({
       result: null,
       isRecord: false,
       poolRecycled: false,
+      roundStartedAt: Date.now(),
+      elapsedMs: null,
       inputLockedUntil: Date.now() + TRANSITION_LOCK_MS,
       advanceUnlockAt: 0,
       seen: marked.seen,
@@ -323,6 +332,7 @@ export const useGame = create<GameState>((set, get) => ({
       screen: 'results',
       result,
       stats,
+      elapsedMs: state.roundStartedAt === null ? null : Date.now() - state.roundStartedAt,
       // Prima rundă la o dificultate nu e „record”, oricât de bine ar merge.
       isRecord: previousRounds > 0 && beatsPrevious,
     });
@@ -338,6 +348,8 @@ export const useGame = create<GameState>((set, get) => ({
       revealed: false,
       timedOut: false,
       result: null,
+      roundStartedAt: null,
+      elapsedMs: null,
     }),
 
   goToReview: () => set({ screen: 'review' }),

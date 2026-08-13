@@ -67,10 +67,9 @@ export const ro = {
   results: {
     heading: 'Rezultate',
     scoreLine: (score: number, total: number) => `Ai răspuns corect la ${score} din ${total} întrebări`,
-    perfect: 'Fișier curat. Zece din zece.',
-    strong: 'Solid. Puține scăpări.',
-    fair: 'Rezonabil, dar mai e loc.',
-    weak: 'Runda asta a fost a întrebărilor.',
+    duration: 'Ți-a luat',
+    perQuestionPrefix: 'cam',
+    perQuestionSuffix: 'de întrebare',
     breakdown: 'Pe categorii',
     review: 'Revezi răspunsurile',
     playAgain: 'Rundă nouă',

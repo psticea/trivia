@@ -12,6 +12,8 @@ Site: <https://psticea.github.io/trivia/>
 
 **Statistici.** Recordurile se țin separat pe dificultăți și se compară procentual, ca 10 din 10 să nu fie depășit de 11 din 20.
 
+**Reacția de la final.** Fiecare scor posibil are cinci formulări, iar una se alege la întâmplare — legată de sămânța rundei, ca să nu sară la re-randare. Sunt scrise pe scor exact, nu pe intervale, și în fiecare grup cel puțin una e de râs. Gluma e mereu despre situație sau despre joc, niciodată pe seama jucătorului. Tot acolo apare și cât a durat runda, ca fapt divers.
+
 ---
 
 ## Cuprins
@@ -57,11 +59,13 @@ src/
     round.ts            construirea rundei și ordinea opțiunilor
     scoring.ts          punctaj, defalcare pe categorii, statistici
     share.ts            codificarea rundei într-un link, cu sau fără scor
+    duration.ts         formatarea duratei, cu acordul numeralului românesc
     rng.ts              generator determinist (runde reproductibile)
     storage.ts          acces tolerant la localStorage
   store/useGame.ts      starea aplicației (zustand)
   components/           interfața
   i18n/ro.ts            toate textele vizibile, într-un singur fișier
+  i18n/verdicts.ts      cele cinci reacții pentru fiecare scor posibil
 scripts/
   validate.ts           poarta de calitate a bazei de întrebări
   progress.ts           raport rapid de progres pe domenii
