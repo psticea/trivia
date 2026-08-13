@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { CATEGORY_BY_ID } from '../data/categories';
+import { categoryName } from '../data/categories';
 import type { Difficulty } from '../data/types';
 import { DIFFICULTY_LABEL, ro } from '../i18n/ro';
 import { accuracy, rankedCategories } from '../game/scoring';
@@ -109,7 +109,7 @@ export function StatsDialog({ open, onClose }: { open: boolean; onClose: () => v
                   <ul className="mt-3 space-y-2">
                     {ranked.slice(0, 3).map((r) => (
                       <li key={r.category} className="flex items-center gap-3 text-[1.0625rem] text-dim">
-                        <span className="flex-1 truncate">{CATEGORY_BY_ID[r.category].name}</span>
+                        <span className="flex-1 truncate">{categoryName(r.category)}</span>
                         <span className="numeral text-text">{Math.round(r.pct * 100)}%</span>
                       </li>
                     ))}
@@ -123,7 +123,7 @@ export function StatsDialog({ open, onClose }: { open: boolean; onClose: () => v
                       .reverse()
                       .map((r) => (
                         <li key={r.category} className="flex items-center gap-3 text-[1.0625rem] text-dim">
-                          <span className="flex-1 truncate">{CATEGORY_BY_ID[r.category].name}</span>
+                          <span className="flex-1 truncate">{categoryName(r.category)}</span>
                           <span className="numeral text-text">{Math.round(r.pct * 100)}%</span>
                         </li>
                       ))}

@@ -15,7 +15,18 @@ import {
 } from '../game/scoring';
 import { decodeShare, encodeShare, readShareToken, type SharePayload } from '../game/share';
 import { clearAll, KEYS, readJson, writeJson } from '../game/storage';
+import {
+  migrateStoredData,
+  sanitizeCategories,
+  sanitizeDifficulty,
+  sanitizeRoundSize,
+  sanitizeSeen,
+  sanitizeStats,
+} from '../game/migrate';
 import { applyTheme, persistTheme, readTheme, type Theme } from '../theme';
+
+// Datele salvate de o ediție anterioară se curăță înainte de orice citire.
+migrateStoredData();
 
 export type Screen = 'start' | 'question' | 'results' | 'review';
 
@@ -82,44 +93,6 @@ type GameState = {
   clearData: () => void;
 };
 
-function loadCategories(): CategoryId[] {
-  const stored = readJson<CategoryId[]>(KEYS.categories, CATEGORY_IDS);
-  const clean = stored.filter((c) => CATEGORY_IDS.includes(c));
-  return clean.length >= MIN_CATEGORIES ? clean : [...CATEGORY_IDS];
-}
-
-function loadDifficulty(): Difficulty {
-  const stored = readJson<Difficulty>(KEYS.difficulty, 'mediu');
-  return stored === 'usor' || stored === 'mediu' || stored === 'dificil' ? stored : 'mediu';
-}
-
-function loadRoundSize(): RoundSize {
-  const stored = readJson<number>(KEYS.roundSize, ROUND_SIZE);
-  return (ROUND_SIZES as readonly number[]).includes(stored) ? (stored as RoundSize) : ROUND_SIZE;
-}
-
-/**
- * Statisticile salvate înainte de rundele de 20 nu au câmpul `bestTotal`.
- * Pe atunci exista o singură lungime de rundă, deci recordul era din 10.
- */
-function loadStats(): Stats {
-  const stored = readJson<Stats>(KEYS.stats, emptyStats());
-  const base = emptyStats();
-  const byDifficulty = { ...base.byDifficulty };
-  for (const tier of ['usor', 'mediu', 'dificil'] as Difficulty[]) {
-    const s = stored.byDifficulty?.[tier];
-    if (!s) continue;
-    byDifficulty[tier] = {
-      rounds: s.rounds ?? 0,
-      totalCorrect: s.totalCorrect ?? 0,
-      totalQuestions: s.totalQuestions ?? 0,
-      best: s.best ?? 0,
-      bestTotal: s.bestTotal ?? (s.rounds > 0 ? ROUND_SIZE : 0),
-    };
-  }
-  return { byDifficulty, byCategory: stored.byCategory ?? {} };
-}
-
 function readChallenge(): SharePayload | null {
   if (typeof window === 'undefined') return null;
   const token = readShareToken(window.location.hash);
@@ -131,10 +104,10 @@ function readChallenge(): SharePayload | null {
 
 export const useGame = create<GameState>((set, get) => ({
   screen: 'start',
-  difficulty: loadDifficulty(),
-  categories: loadCategories(),
-  roundSize: loadRoundSize(),
-  timerEnabled: readJson<boolean>(KEYS.timer, false),
+  difficulty: sanitizeDifficulty(readJson<unknown>(KEYS.difficulty, null)),
+  categories: sanitizeCategories(readJson<unknown>(KEYS.categories, null)),
+  roundSize: sanitizeRoundSize(readJson<unknown>(KEYS.roundSize, null)),
+  timerEnabled: readJson<boolean>(KEYS.timer, false) === true,
   theme: readTheme(),
 
   round: null,
@@ -153,8 +126,8 @@ export const useGame = create<GameState>((set, get) => ({
   roundStartedAt: null,
   elapsedMs: null,
 
-  stats: loadStats(),
-  seen: readJson<SeenMap>(KEYS.seen, {}),
+  stats: sanitizeStats(readJson<unknown>(KEYS.stats, null)),
+  seen: sanitizeSeen(readJson<unknown>(KEYS.seen, null)),
   seenCounter: readJson<number>(KEYS.seenCounter, 0),
 
   challenge: readChallenge(),

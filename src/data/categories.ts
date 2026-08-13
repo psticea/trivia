@@ -88,3 +88,17 @@ export const CATEGORY_IDS: CategoryId[] = CATEGORIES.map((c) => c.id);
 export const CATEGORY_BY_ID: Record<CategoryId, CategoryMeta> = Object.fromEntries(
   CATEGORIES.map((c) => [c.id, c]),
 ) as Record<CategoryId, CategoryMeta>;
+
+export function isKnownCategory(id: string): id is CategoryId {
+  return Object.prototype.hasOwnProperty.call(CATEGORY_BY_ID, id);
+}
+
+/**
+ * Căutare care nu aruncă niciodată.
+ * Datele salvate în browser pot conține categorii scoase între ediții — a fost
+ * exact cauza unui ecran negru: `CATEGORY_BY_ID['cultura'].name` pe o categorie
+ * care nu mai există oprea toată aplicația la prima randare.
+ */
+export function categoryName(id: string): string {
+  return isKnownCategory(id) ? CATEGORY_BY_ID[id].name : id;
+}

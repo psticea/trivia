@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import { CATEGORY_BY_ID } from '../data/categories';
+import { categoryName } from '../data/categories';
 import { DIFFICULTY_LABEL, ro } from '../i18n/ro';
 import { verdictFor } from '../i18n/verdicts';
 import { averagePerQuestion, formatDuration } from '../game/duration';
@@ -133,7 +133,7 @@ export function ResultsScreen() {
               <li key={row.category}>
                 <div className="flex items-baseline justify-between gap-4">
                   <span className="min-w-0 flex-1 truncate text-[1.125rem] font-medium text-text">
-                    {CATEGORY_BY_ID[row.category].name}
+                    {categoryName(row.category)}
                   </span>
                   <span className="numeral shrink-0 text-[1.1875rem] text-dim">
                     {row.correct}/{row.total}

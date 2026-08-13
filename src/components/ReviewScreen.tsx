@@ -1,4 +1,4 @@
-import { CATEGORY_BY_ID } from '../data/categories';
+import { categoryName } from '../data/categories';
 import { ro } from '../i18n/ro';
 import { useGame } from '../store/useGame';
 import { CheckMark, CrossMark } from './Motif';
@@ -47,7 +47,7 @@ export function ReviewScreen() {
                   {correct ? <CheckMark className="size-4" /> : <CrossMark className="size-3.5" />}
                 </span>
                 <span className="label min-w-0 flex-1 truncate text-faint">
-                  {CATEGORY_BY_ID[q.category].name}
+                  {categoryName(q.category)}
                 </span>
                 <span className="numeral shrink-0 text-[1.4rem] text-line-hi">
                   {String(i + 1).padStart(2, '0')}

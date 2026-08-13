@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { CATEGORY_BY_ID } from '../data/categories';
+import { categoryName } from '../data/categories';
 import { DIFFICULTY_LABEL, OPTION_LETTERS, ro } from '../i18n/ro';
 import { TIMER_SECONDS, useGame } from '../store/useGame';
 import { ArrowRight, CheckMark, CrossMark, GhostNumeral, ProgressRail, ShareIcon } from './Motif';
@@ -76,7 +76,7 @@ export function QuestionScreen() {
   if (!round || !item) return null;
 
   const question = item.question;
-  const category = CATEGORY_BY_ID[question.category];
+  const category = categoryName(question.category);
   const results: (boolean | null)[] = Array.from({ length: total }, (_, i) =>
     i < answers.length ? answers[i].correct : null,
   );
@@ -94,7 +94,7 @@ export function QuestionScreen() {
           {/* ── Antetul rundei ── */}
           <div className="flex items-center justify-between gap-4 pt-4 lg:pt-6">
             <div className="flex min-w-0 items-center gap-2.5">
-              <span className="label truncate text-[0.75rem] text-accent-ink sm:text-[0.8125rem]">{category.name}</span>
+              <span className="label truncate text-[0.75rem] text-accent-ink sm:text-[0.8125rem]">{category}</span>
               <span aria-hidden="true" className="text-line-hi">
                 /
               </span>
