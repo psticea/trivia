@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from 'react';
-import { QUESTION_COUNT } from './data';
 import { ro } from './i18n/ro';
 import { useGame } from './store/useGame';
 import { StartScreen } from './components/StartScreen';
@@ -99,7 +98,7 @@ export default function App() {
         <footer className="mx-auto w-full max-w-[1240px] px-5 pb-36 sm:px-8 lg:pb-16">
           <div className="border-t border-line pt-6">
             <p className="label text-faint">
-              {ro.footer.questions(QUESTION_COUNT)}
+              {ro.footer.questions()}
               <span className="mx-2 text-line-hi">/</span>
               <a
                 href="https://github.com/psticea/trivia"

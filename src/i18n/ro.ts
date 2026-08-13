@@ -5,8 +5,8 @@
 
 export const ro = {
   meta: {
-    title: 'Fișier de întrebări',
-    tagline: 'Nouă sute de fișe despre lume și despre noi.',
+    title: 'Cultură generală',
+    tagline: 'Cât știi despre lume?',
     subtitle: 'Alegi nivelul, lungimea rundei și domeniile. Restul ține de tine.',
   },
 
@@ -22,7 +22,7 @@ export const ro = {
     allCategories: 'Toate categoriile',
     minWarning: 'Selectează cel puțin 3 categorii',
     selected: (n: number) => `${n} din 10 selectate`,
-    fondLabel: 'Fond',
+    fondLabel: 'Domenii',
     fondValue: (n: number) => `${n} de fișe`,
     challengeIntro: 'Ai primit o provocare',
     challengeDetail: (score: number, total: number) =>
@@ -124,7 +124,7 @@ export const ro = {
 
   footer: {
     repo: 'Codul sursă',
-    questions: (n: number) => `${n} de întrebări verificate`,
+    questions: () => 'Întrebări scrise și verificate cu surse',
     built: 'Fonturi Bricolage Grotesque, Archivo și IBM Plex Mono, servite de pe acest site.',
     noTracking: 'Fără urmărire, fără cereri către alte servere.',
   },

@@ -13,7 +13,7 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { CATEGORIES, CATEGORY_IDS } from '../src/data/categories';
-import type { CategoryId, Difficulty, Question } from '../src/data/types';
+import { REGIONS, type CategoryId, type Difficulty, type Question, type Region } from '../src/data/types';
 import { poolSize, ROUND_SIZES, selectRound } from '../src/game/select';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
@@ -24,10 +24,30 @@ const onlyCategory = args.find((a) => a.startsWith('--category='))?.split('=')[1
   | undefined;
 const QUIET = args.includes('--quiet');
 
-const PER_CATEGORY = 90;
-const PER_TIER = 30;
+const PER_CATEGORY = 150;
+const PER_TIER = 50;
 const TOTAL = PER_CATEGORY * CATEGORIES.length;
 const DIFFICULTIES: Difficulty[] = ['usor', 'mediu', 'dificil'];
+
+/**
+ * Ținta de regiuni, per categorie. Jucătorii sunt din România, deci baza e
+ * construită dinspre ce cunosc: întâi țara, apoi Europa, apoi America de Nord,
+ * apoi restul lumii. Toleranța e ±6 întrebări față de țintă.
+ */
+const REGION_TARGET: Record<CategoryId, Record<Region, number>> = {
+  istorie: { ro: 45, europa: 45, america_nord: 30, restul_lumii: 30, universal: 0 },
+  geografie: { ro: 45, europa: 45, america_nord: 30, restul_lumii: 30, universal: 0 },
+  stiinta: { ro: 30, europa: 40, america_nord: 30, restul_lumii: 15, universal: 35 },
+  arta: { ro: 45, europa: 50, america_nord: 30, restul_lumii: 25, universal: 0 },
+  muzica: { ro: 45, europa: 45, america_nord: 33, restul_lumii: 17, universal: 10 },
+  film: { ro: 45, europa: 45, america_nord: 40, restul_lumii: 20, universal: 0 },
+  sport: { ro: 45, europa: 45, america_nord: 30, restul_lumii: 30, universal: 0 },
+  tehnologie: { ro: 40, europa: 40, america_nord: 40, restul_lumii: 15, universal: 15 },
+  gastronomie: { ro: 45, europa: 45, america_nord: 25, restul_lumii: 35, universal: 0 },
+  religie: { ro: 45, europa: 40, america_nord: 15, restul_lumii: 45, universal: 5 },
+};
+
+const REGION_TOLERANCE = 6;
 
 const failures: string[] = [];
 const warnings: string[] = [];
@@ -41,7 +61,7 @@ const QuestionSchema = z.object({
   id: z.string().regex(/^[a-z]{3}-\d{3}$/, 'id trebuie să fie de forma "ist-001"'),
   category: z.enum(CATEGORY_IDS as [CategoryId, ...CategoryId[]]),
   difficulty: z.enum(['usor', 'mediu', 'dificil']),
-  scope: z.enum(['ro', 'international']),
+  region: z.enum(REGIONS as [Region, ...Region[]]),
   question: z.string().min(10),
   options: z.tuple([z.string().min(1), z.string().min(1), z.string().min(1), z.string().min(1)]),
   correctIndex: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)]),
@@ -74,9 +94,11 @@ function normalize(s: string): string {
 }
 
 const STOPWORDS = new Set(
-  'a al ale ai as au care ce cu de din doi este el ea in intre la le lui mai mult nu o pe pentru prin sa se si sunt un una unei unui cel cea cei cele care care'.split(
-    ' ',
-  ),
+  `a al ale ai as au care ce cu de din doi este el ea in intre la le lui mai mult nu o pe pentru
+   prin sa se si sunt un una unei unui cel cea cei cele dintre dupa fost face fi era erau catre
+   sau dar iar numit numita numite cunoscut cunoscuta primul prima anul secolul`
+    .split(/\s+/)
+    .filter(Boolean),
 );
 
 function tokens(s: string): Set<string> {
@@ -109,11 +131,11 @@ const MISSING_DIACRITICS = new Set(
    cuvant cuvantul traditie traditii traditional sarbatoare sarbatori manastire manastiri
    competitie competitii castigat castigator castigatoare invingator invins
    inseamna insemnand invatat invatatura scoala scolile stiut adancime latime
-   varsta varstnic marime marimea caldura sanatate pasare pasari
-   celalalt inauntru intalnire intamplare intamplat impartit impartire
+   varsta varstnic marime marimea caldura sanatate pasare pasari zeita zeul zeii
+   celalalt inauntru intalnire intamplare intamplat impartit impartire credinta credinte
    inconjurat inconjoara inzestrat insotit insotitor inrudit inlocuit inlocuire
    invatamant intreg intreaga intregul intrebare intrebari raspuns raspunsuri
-   dinastie? asa insa insusi inaltat inaltime`
+   asa insa insusi inaltat inaltime`
     .split(/\s+/)
     .map((w) => w.replace(/[^a-z]/g, ''))
     .filter(Boolean),
@@ -146,6 +168,53 @@ function needsSource(q: Question): boolean {
   const haystack = normalize(`${q.question} ${q.options[q.correctIndex]}`);
   if (/\d/.test(`${q.question} ${q.options[q.correctIndex]}`)) return true;
   return SUPERLATIVES.some((s) => haystack.includes(s));
+}
+
+/**
+ * Cuvintele din răspunsul corect care apar și în întrebare, dar în niciuna
+ * dintre variantele greșite. Astea transformă întrebarea într-un cadou:
+ * jucătorul potrivește cuvântul, nu răspunde la întrebare.
+ */
+function giveawayTokens(q: Question): string[] {
+  const inQuestion = tokens(q.question);
+  const correct = tokens(q.options[q.correctIndex]);
+  const distractorTokens = new Set<string>();
+  q.options.forEach((opt, i) => {
+    if (i === q.correctIndex) return;
+    for (const t of tokens(opt)) distractorTokens.add(t);
+  });
+
+  const leaks: string[] = [];
+  for (const t of correct) {
+    if (t.length < 4) continue;
+    if (inQuestion.has(t) && !distractorTokens.has(t)) leaks.push(t);
+  }
+  return leaks;
+}
+
+/**
+ * Varianta mai slabă a aceleiași probleme: nu același cuvânt, ci aceeași
+ * rădăcină — „Pasteur” în întrebare și „pasteurizarea” în răspuns, „Francisc
+ * din Assisi” și „Franciscanii”. Uneori e legitim (rădăcina e substantivul
+ * generic: „Ce mare…” → „Marea Baltică”), așa că doar avertizează.
+ */
+function stemLeaks(q: Question): string[] {
+  const stem = (w: string) => w.slice(0, 6);
+  const qStems = new Set([...tokens(q.question)].filter((w) => w.length >= 6).map(stem));
+  const dStems = new Set(
+    q.options
+      .flatMap((opt, i) => (i === q.correctIndex ? [] : [...tokens(opt)]))
+      .filter((w) => w.length >= 6)
+      .map(stem),
+  );
+  const exact = new Set(giveawayTokens(q));
+
+  const leaks: string[] = [];
+  for (const t of tokens(q.options[q.correctIndex])) {
+    if (t.length < 6 || exact.has(t)) continue;
+    if (qStems.has(stem(t)) && !dStems.has(stem(t))) leaks.push(t);
+  }
+  return leaks;
 }
 
 // ────────────────────────────────────────────────────────────── încărcare date
@@ -225,38 +294,51 @@ function checkStructure(all: Question[], full: boolean) {
     const got = new Set(inCat.map((q) => q.id));
     const missing = [...expected].filter((id) => !got.has(id));
     if (inCat.length === PER_CATEGORY && missing.length > 0) {
-      warn(`${cat.name}: id-uri lipsă din secvența 001–090 (${missing.slice(0, 5).join(', ')}…).`);
+      warn(`${cat.name}: id-uri lipsă din secvența 001–${PER_CATEGORY} (${missing.slice(0, 5).join(', ')}…).`);
     }
   }
 }
 
-function checkScope(all: Question[], full: boolean) {
-  const ro = all.filter((q) => q.scope === 'ro').length;
-  if (full) {
-    const share = pct(ro, all.length);
-    if (share < 25 || share > 35) {
-      fail(`Pondere „ro” globală ${share.toFixed(1)}% — trebuie între 25% și 35%.`);
-    }
-  }
-
+function checkRegions(all: Question[], full: boolean) {
   for (const cat of CATEGORIES) {
     const inCat = all.filter((q) => q.category === cat.id);
     if (inCat.length === 0) continue;
-    const share = pct(inCat.filter((q) => q.scope === 'ro').length, inCat.length);
-    if (cat.id === 'cultura') {
-      if (share !== 100) fail(`${cat.name}: trebuie 100% „ro”, are ${share.toFixed(1)}%.`);
-    } else if (share < 10 || share > 35) {
-      fail(`${cat.name}: pondere „ro” ${share.toFixed(1)}% — trebuie între 10% și 35%.`);
+    const target = REGION_TARGET[cat.id];
+    for (const region of REGIONS) {
+      const got = inCat.filter((q) => q.region === region).length;
+      const want = target[region];
+      if (Math.abs(got - want) > REGION_TOLERANCE) {
+        fail(
+          `${cat.name} / ${region}: ${got} întrebări, țintă ${want} (toleranță ±${REGION_TOLERANCE}).`,
+        );
+      }
     }
   }
 
-  if (full) {
-    for (const d of DIFFICULTIES) {
-      const tier = all.filter((q) => q.difficulty === d);
-      const share = pct(tier.filter((q) => q.scope === 'ro').length, tier.length);
-      if (share < 20 || share > 40) {
-        fail(`Tier „${d}”: pondere „ro” ${share.toFixed(1)}% — trebuie între 20% și 40%.`);
-      }
+  if (!full) return;
+
+  // Ținta globală: ~30% România, ~30% Europa, ~20% America de Nord, restul lumea.
+  const bands: Record<Region, [number, number]> = {
+    ro: [26, 34],
+    europa: [26, 34],
+    america_nord: [16, 24],
+    restul_lumii: [13, 22],
+    universal: [0, 9],
+  };
+  for (const region of REGIONS) {
+    const share = pct(all.filter((q) => q.region === region).length, all.length);
+    const [lo, hi] = bands[region];
+    if (share < lo || share > hi) {
+      fail(`Pondere globală „${region}”: ${share.toFixed(1)}% — trebuie între ${lo}% și ${hi}%.`);
+    }
+  }
+
+  // România trebuie să fie prezentă în fiecare tier, nu doar la întrebările ușoare.
+  for (const d of DIFFICULTIES) {
+    const tier = all.filter((q) => q.difficulty === d);
+    const share = pct(tier.filter((q) => q.region === 'ro').length, tier.length);
+    if (share < 22 || share > 38) {
+      fail(`Tier „${d}”: pondere „ro” ${share.toFixed(1)}% — trebuie între 22% și 38%.`);
     }
   }
 }
@@ -294,6 +376,22 @@ function checkContent(all: Question[], full: boolean) {
     const blob = normalize([q.question, ...q.options].join(' '));
     for (const phrase of BANNED_PHRASES) {
       if (blob.includes(normalize(phrase))) fail(`[${q.id}] conține fraza interzisă „${phrase}”.`);
+    }
+  }
+
+  // Răspunsul nu are voie să fie cadou: cuvântul-cheie repetat din întrebare.
+  for (const q of all) {
+    const leaks = giveawayTokens(q);
+    if (leaks.length > 0) {
+      fail(
+        `[${q.id}] răspunsul se ghicește din întrebare — „${leaks.join(', ')}” apare și în întrebare, dar în nicio variantă greșită: „${q.question}” → „${q.options[q.correctIndex]}”`,
+      );
+    }
+    const stems = stemLeaks(q);
+    if (stems.length > 0) {
+      warn(
+        `[${q.id}] rădăcină comună cu întrebarea („${stems.join(', ')}”) — verifică dacă răspunsul se ghicește: „${q.question}” → „${q.options[q.correctIndex]}”`,
+      );
     }
   }
 
@@ -417,45 +515,66 @@ function checkSourceFilesForCedillas() {
 
 // ───────────────────────────────────────────────────────────────────── raport
 
+const REGION_SHORT: Record<Region, string> = {
+  ro: 'RO',
+  europa: 'EU',
+  america_nord: 'AmN',
+  restul_lumii: 'Rest',
+  universal: 'Univ',
+};
+
 function report(all: Question[], full: boolean) {
   if (QUIET) return;
-  const line = '─'.repeat(64);
+  const line = '─'.repeat(78);
   console.log(`\n${line}`);
   console.log('  BAZA DE ÎNTREBĂRI — REZUMAT');
   console.log(line);
-  const head = 'Categorie'.padEnd(20) + 'Tot'.padStart(5) + 'Ușor'.padStart(6) + 'Mediu'.padStart(7) + 'Dificil'.padStart(9) + 'RO'.padStart(6) + 'Surse'.padStart(7);
+  const head =
+    'Categorie'.padEnd(20) +
+    'Tot'.padStart(5) +
+    'Ușor'.padStart(6) +
+    'Mediu'.padStart(7) +
+    'Dific'.padStart(7) +
+    REGIONS.map((r) => REGION_SHORT[r].padStart(6)).join('') +
+    'Surse'.padStart(7);
   console.log(head);
   for (const cat of CATEGORIES) {
     const inCat = all.filter((q) => q.category === cat.id);
     if (inCat.length === 0 && !full) continue;
     const d = (x: Difficulty) => inCat.filter((q) => q.difficulty === x).length;
-    const ro = inCat.filter((q) => q.scope === 'ro').length;
     const src = inCat.filter((q) => q.source).length;
     console.log(
       cat.name.padEnd(20) +
         String(inCat.length).padStart(5) +
         String(d('usor')).padStart(6) +
         String(d('mediu')).padStart(7) +
-        String(d('dificil')).padStart(9) +
-        fmtPct(ro, inCat.length).padStart(6) +
+        String(d('dificil')).padStart(7) +
+        REGIONS.map((r) => String(inCat.filter((q) => q.region === r).length).padStart(6)).join('') +
         String(src).padStart(7),
     );
   }
   console.log(line);
-  const ro = all.filter((q) => q.scope === 'ro').length;
   console.log(
     'TOTAL'.padEnd(20) +
       String(all.length).padStart(5) +
       String(all.filter((q) => q.difficulty === 'usor').length).padStart(6) +
       String(all.filter((q) => q.difficulty === 'mediu').length).padStart(7) +
-      String(all.filter((q) => q.difficulty === 'dificil').length).padStart(9) +
-      fmtPct(ro, all.length).padStart(6) +
+      String(all.filter((q) => q.difficulty === 'dificil').length).padStart(7) +
+      REGIONS.map((r) => String(all.filter((q) => q.region === r).length).padStart(6)).join('') +
       String(all.filter((q) => q.source).length).padStart(7),
   );
 
+  console.log(
+    '\n  Pondere pe regiuni: ' +
+      REGIONS.map((r) => `${REGION_SHORT[r]} ${fmtPct(all.filter((q) => q.region === r).length, all.length)}`).join(
+        '  ',
+      ),
+  );
+
   const positions = [0, 1, 2, 3].map((i) => all.filter((q) => q.correctIndex === i).length);
-  console.log(`\n  Poziția răspunsului corect (în date): ${positions.map((n, i) => `${i + 1}=${fmtPct(n, all.length)}`).join('  ')}`);
-  console.log('  (amestecarea la rulare face distribuția pur cosmetică)');
+  console.log(
+    `  Poziția răspunsului corect (în date): ${positions.map((n, i) => `${i + 1}=${fmtPct(n, all.length)}`).join('  ')}`,
+  );
 
   const tell = all.filter((q) => {
     const lens = q.options.map((o) => o.length);
@@ -472,16 +591,6 @@ function report(all: Question[], full: boolean) {
   if (qLens.length > 0) {
     console.log(
       `  Lungimi — întrebare medie ${(qLens.reduce((a, b) => a + b, 0) / qLens.length).toFixed(0)}, max ${Math.max(...qLens)}; opțiune medie ${(oLens.reduce((a, b) => a + b, 0) / oLens.length).toFixed(0)}, max ${Math.max(...oLens)}`,
-    );
-  }
-
-  console.log('\n  Lungimea opțiunilor pe categorie (medie / max):');
-  for (const cat of CATEGORIES) {
-    const inCat = all.filter((q) => q.category === cat.id);
-    if (inCat.length === 0) continue;
-    const lens = inCat.flatMap((q) => q.options.map((o) => o.length));
-    console.log(
-      `    ${cat.name.padEnd(20)} ${(lens.reduce((a, b) => a + b, 0) / lens.length).toFixed(1).padStart(5)} / ${String(Math.max(...lens)).padStart(3)}`,
     );
   }
 }
@@ -502,7 +611,7 @@ async function main() {
 
   checkSchema(all);
   checkStructure(all, full);
-  checkScope(all, full);
+  checkRegions(all, full);
   checkLanguage(all);
   checkContent(all, full);
   checkSourceFilesForCedillas();
@@ -523,7 +632,9 @@ async function main() {
     process.exit(1);
   }
 
-  console.log(`\n  ✔ Validare trecută${onlyCategory ? ` (doar ${onlyCategory})` : ''} — ${all.length} întrebări, ${warnings.length} avertismente.\n`);
+  console.log(
+    `\n  ✔ Validare trecută${onlyCategory ? ` (doar ${onlyCategory})` : ''} — ${all.length} întrebări, ${warnings.length} avertismente.\n`,
+  );
 }
 
 main().catch((err) => {

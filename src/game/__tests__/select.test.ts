@@ -9,7 +9,7 @@ function makeQuestion(category: CategoryId, difficulty: Difficulty, n: number): 
     id: `${category}-${difficulty}-${n}`,
     category,
     difficulty,
-    scope: 'international',
+    region: 'universal',
     question: `Întrebarea ${n}?`,
     options: ['a', 'b', 'c', 'd'],
     correctIndex: 0,

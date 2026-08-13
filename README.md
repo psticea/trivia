@@ -1,10 +1,12 @@
-# Fișier de întrebări
+# Cultură generală
 
-Un joc de trivia **în limba română**, gândit întâi pentru telefon: 900 de întrebări verificate, 10 categorii, 3 niveluri de dificultate, runde de 10 sau 20 de întrebări.
+Un joc de trivia **în limba română**, gândit întâi pentru telefon: 1500 de întrebări verificate, 10 domenii, 3 niveluri de dificultate, runde de 10 sau 20 de întrebări.
 
 **Conceptul de design, într-o propoziție:** *un panou de control redus la esențial — fundal aproape negru, tipografie mare și un singur gest de culoare, verde citric, care înseamnă întotdeauna „corect”.* Fără ornament, fără umbre, fără sticlă. Există și o temă luminoasă, comutabilă din `Setări`.
 
 Site: <https://psticea.github.io/trivia/>
+
+**Pentru cine e scris.** Jucătorii sunt din România, iar asta decide ce merită întrebat. Baza e construită dinspre ce cunosc ei: aproximativ 30% România, 30% restul Europei, 20% America de Nord, restul lumea largă și conceptele fără geografie. Pentru România și Europa se poate intra în detaliu; pentru restul lumii întrebările rămân la nivelul reperelor cunoscute, fiindcă altfel dificultatea devine simplă obscuritate.
 
 **Provocări.** Orice rundă poate fi trimisă ca link, în două feluri: din timpul rundei (butonul `Invită`), ca să jucați aceleași întrebări în același timp, sau de la final, împreună cu scorul obținut. Linkul reproduce exact aceeași rundă — aceleași întrebări, în aceeași ordine, cu aceeași ordine a variantelor.
 
@@ -47,9 +49,9 @@ npm run preview   # servește dist/ respectând base-ul
 ```
 src/
   data/                 baza de întrebări — singura sursă de adevăr
-    types.ts            contractul unei întrebări
-    categories.ts       cele 10 categorii și prefixele lor de id
-    questions/*.ts      câte 90 de întrebări per categorie, un fișier fiecare
+    types.ts            contractul unei întrebări, inclusiv regiunile
+    categories.ts       cele 10 domenii și prefixele lor de id
+    questions/*.ts      câte 150 de întrebări per domeniu, un fișier fiecare
   game/                 logica jocului: pură, testabilă, fără React
     select.ts           alegerea stratificată a întrebărilor unei runde
     round.ts            construirea rundei și ordinea opțiunilor
@@ -62,6 +64,8 @@ src/
   i18n/ro.ts            toate textele vizibile, într-un singur fișier
 scripts/
   validate.ts           poarta de calitate a bazei de întrebări
+  progress.ts           raport rapid de progres pe domenii
+  normalize.ts          rescrie un fișier de întrebări în formă canonică
   og.html               sursa imaginii de previzualizare
   icons.ts              generează apple-touch-icon.png din favicon.svg
 ```
@@ -76,14 +80,14 @@ Cineva **va** găsi o greșeală. Iată drumul de la greșeală la remediere.
 
 ### Corectarea unei întrebări existente
 
-1. Caută id-ul întrebării (apare în recapitulare, la finalul rundei) în `src/data/questions/`. Prefixul spune categoria: `ist` = istorie, `geo` = geografie, `sti` = știință, `art` = artă, `muz` = muzică, `flm` = film, `spo` = sport, `teh` = tehnologie, `gas` = gastronomie, `rom` = cultură românească.
+1. Caută id-ul întrebării (apare în recapitulare, la finalul rundei) în `src/data/questions/`. Prefixul spune domeniul: `ist` = istorie, `geo` = geografie, `sti` = știință, `art` = artă, `muz` = muzică, `flm` = film, `spo` = sport, `teh` = tehnologie, `gas` = gastronomie, `rel` = religii și mitologie.
 2. Corectează câmpul greșit. **Nu schimba `id`-ul.** Linkurile de provocare deja trimise îl folosesc; renumerotarea le strică pe toate, tăcut.
 3. Dacă modifici răspunsul corect, actualizează și `explanation`, și pune o sursă verificabilă în `source`.
 4. `npm run validate` — trebuie să iasă `✔ Validare trecută`.
 
 ### Înlocuirea unei întrebări
 
-Păstrează id-ul și rescrie conținutul, ori scoate întrebarea și adaugă alta cu **următorul id liber** din acea categorie. Validatorul cere exact 90 de întrebări pe categorie și 30 pe fiecare dificultate, deci o ștergere trebuie compensată cu o adăugare.
+Păstrează id-ul și rescrie conținutul, ori scoate întrebarea și adaugă alta cu **următorul id liber** din acel domeniu. Validatorul cere exact 150 de întrebări pe domeniu și 50 pe fiecare dificultate, deci o ștergere trebuie compensată cu o adăugare.
 
 ### Forma unei întrebări
 
@@ -92,11 +96,11 @@ Păstrează id-ul și rescrie conținutul, ori scoate întrebarea și adaugă al
   id: 'geo-042',              // stabil, niciodată renumerotat
   category: 'geografie',
   difficulty: 'mediu',        // 'usor' | 'mediu' | 'dificil'
-  scope: 'international',     // 'ro' dacă subiectul e românesc
+  region: 'europa',           // 'ro' | 'europa' | 'america_nord' | 'restul_lumii' | 'universal'
   question: 'Ce strâmtoare desparte Europa de Africa?',
   options: ['Gibraltar', 'Bosfor', 'Messina', 'Skagerrak'],
   correctIndex: 0,
-  explanation: 'Strâmtoarea Gibraltar leagă Marea Mediterană de Oceanul Atlantic...',
+  explanation: 'Strâmtoarea leagă Marea Mediterană de Oceanul Atlantic...',
   source: 'Encyclopaedia Britannica, „Strait of Gibraltar”',
 }
 ```
@@ -105,6 +109,7 @@ Reguli care se verifică automat, dar merită știute dinainte:
 
 - exact 4 opțiuni, distincte, **un singur** răspuns apărabil;
 - cele trei variante greșite trebuie să fie **plauzibile și de același fel** cu răspunsul;
+- **niciun cuvânt din răspunsul corect nu are voie să apară în întrebare**, dacă nu apare și în variantele greșite — altfel întrebarea se rezolvă prin potrivire de cuvinte, nu prin cunoaștere;
 - răspunsul corect nu are voie să fie sistematic cel mai lung (prag: 35%);
 - fără „toate variantele”, fără întrebări negative, fără fapte care expiră („campionul actual”, „în prezent”);
 - întrebarea sub 140 de caractere, opțiunile sub 60 — trebuie să încapă pe un ecran de 390 px;
@@ -125,13 +130,17 @@ Ce verifică:
 
 | Grup | Verificări |
 |---|---|
-| Structură | 900 în total; 90 pe categorie; 30/30/30 pe dificultăți; id-uri unice cu prefix corect; 4 opțiuni distincte; câmpuri necompletate; întrebarea se termină cu „?”; `source` unde e obligatorie |
-| Echilibru `ro` | 25–35% global; 100% la Cultură Românească, 10–35% în rest; 20–40% în fiecare tier de dificultate |
+| Structură | 1500 în total; 150 pe domeniu; 50/50/50 pe dificultăți; id-uri unice cu prefix corect; 4 opțiuni distincte; câmpuri necompletate; întrebarea se termină cu „?”; `source` unde e obligatorie |
+| Regiuni | ținta pe domeniu, cu toleranță ±6; global 26–34% România, 26–34% Europa, 16–24% America de Nord, 13–22% restul lumii, sub 9% universal; România prezentă în fiecare tier de dificultate |
 | Limbă | **zero caractere cu sedilă** în date *și* în interfață; semnalează diacriticele lipsă; semnalează întrebările peste 140 și opțiunile peste 60 de caractere |
-| Conținut | cvasi-duplicate, inclusiv între categorii; tell-ul de lungime; distribuția răspunsului corect; fraze interzise; procentul de întrebări negative |
-| Jucabilitate | pentru **fiecare** dificultate × **fiecare** combinație de 3 categorii × **fiecare** lungime de rundă (720 în total), confirmă că se pot extrage întrebări unice cât ține runda |
+| Conținut | **răspunsul nu se ghicește din întrebare**; cvasi-duplicate, inclusiv între domenii; tell-ul de lungime; distribuția răspunsului corect; fraze interzise; procentul de întrebări negative |
+| Jucabilitate | pentru **fiecare** dificultate × **fiecare** combinație de 3 domenii × **fiecare** lungime de rundă (720 în total), confirmă că se pot extrage întrebări unice cât ține runda |
 
-Ultima verificare e cea mai importantă: prinde greșelile de distribuție pe care nicio recitire manuală nu le-ar găsi.
+Două verificări merită explicate, fiindcă prind greșeli pe care nicio recitire manuală nu le găsește:
+
+**Răspunsul-cadou.** Validatorul normalizează textul, scoate diacriticele, taie în cuvinte și pică buildul dacă un cuvânt de 4+ litere din răspunsul corect apare în întrebare, dar în niciuna dintre cele trei variante greșite. „Cine a fost împăratul care a ridicat Zidul lui Hadrian?” cu răspunsul „Hadrian” se rezolvă prin potrivire de cuvinte, nu prin cunoaștere.
+
+**Simularea de jucabilitate.** Prinde erorile de distribuție: dacă o combinație de trei domenii nu poate produce 20 de întrebări unice la o dificultate, o afli aici, nu de la un jucător.
 
 ---
 
@@ -187,19 +196,22 @@ Pipeline-ul rulează `npm ci`, `npm run validate`, `npm test`, `npm run build` �
 
 ## Cum a fost construită baza de întrebări
 
-Fiecare categorie a fost scrisă după o hartă de acoperire făcută dinainte (subdomenii, epoci, regiuni), nu întrebare cu întrebare. Verificarea s-a concentrat acolo unde e riscul: date, cifre, recorduri, superlative și atribuiri de invenție sau paternitate — toate cele 900 de întrebări au un câmp `source` completat cu o referință verificabilă.
+Fiecare domeniu a fost scris după o hartă de acoperire făcută dinainte (subdomenii, epoci, regiuni), nu întrebare cu întrebare. Verificarea s-a concentrat acolo unde e riscul: date, cifre, recorduri, superlative și atribuiri de invenție sau paternitate — toate cele 1500 de întrebări au un câmp `source` completat cu o referință verificabilă.
 
-Echilibrul dintre subiectele românești și cele internaționale e impus de validator: 28,1% din întrebări au `scope: 'ro'`, dintre care 90 vin din categoria dedicată, iar restul sunt împrăștiate uniform prin celelalte nouă. Un joc despre lume, cu accent românesc — nu un joc despre România.
+Distribuția pe regiuni e impusă de validator, cu ținte per domeniu și benzi globale. Ea pornește de la o observație simplă: jucătorii sunt din România, deci întrebările merită construite dinspre ce cunosc. Pentru România și Europa se poate intra în detaliu; pentru restul lumii rămânem la reperele din manual și din cultura comună, fiindcă altfel dificultatea devine simplă obscuritate.
 
 Cifre din ultima rulare a validatorului:
 
 ```
-900 de întrebări · 90 pe categorie · 30/30/30 pe dificultăți
-28,1% subiecte românești · 900 din 900 cu sursă
-răspunsul corect e cea mai lungă opțiune în 27,4% din cazuri (prag 35%)
-0 întrebări negative · 0 avertismente
-720 de combinații dificultate × 3 categorii × lungime de rundă, toate jucabile
+1500 de întrebări · 150 pe domeniu · 50/50/50 pe dificultăți
+România 28,7% · Europa 29,3% · America de Nord 20,3% · restul lumii 17,4% · universal 4,3%
+1500 din 1500 cu sursă
+răspunsul corect e cea mai lungă opțiune în 24,5% din cazuri (prag 35%)
+0 întrebări negative · 0 răspunsuri care se ghicesc din întrebare
+720 de combinații dificultate × 3 domenii × lungime de rundă, toate jucabile
 ```
+
+Cele 11 avertismente rămase sunt toate de același fel: substantivul generic din întrebare se repetă în răspuns („Ce mare se află între Suedia și Finlanda?" → „Marea Baltică"). Sunt limbă românească normală, nu răspunsuri cadou — informația care discriminează stă în cealaltă parte a răspunsului. Le-am acceptat conștient.
 
 ---
 

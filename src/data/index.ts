@@ -8,7 +8,7 @@ import { flmQuestions } from './questions/film';
 import { spoQuestions } from './questions/sport';
 import { tehQuestions } from './questions/tehnologie';
 import { gasQuestions } from './questions/gastronomie';
-import { romQuestions } from './questions/cultura';
+import { relQuestions } from './questions/religie';
 
 export const QUESTIONS: Question[] = [
   ...istQuestions,
@@ -20,7 +20,7 @@ export const QUESTIONS: Question[] = [
   ...spoQuestions,
   ...tehQuestions,
   ...gasQuestions,
-  ...romQuestions,
+  ...relQuestions,
 ];
 
 export const QUESTION_COUNT = QUESTIONS.length;

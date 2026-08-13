@@ -1,5 +1,4 @@
 import { CATEGORIES } from '../data/categories';
-import { QUESTION_COUNT } from '../data';
 import type { Difficulty } from '../data/types';
 import { ro } from '../i18n/ro';
 import { MIN_CATEGORIES, ROUND_SIZES, useGame } from '../store/useGame';
@@ -57,13 +56,13 @@ export function StartScreen() {
           )}
 
           <GhostNumeral
-            value={QUESTION_COUNT}
-            className={`-right-2 text-[9rem] sm:text-[13rem] lg:text-[16rem] ${challenge ? 'top-52 sm:top-56' : '-top-4 lg:-top-10'}`}
+            value="?"
+            className={`-right-2 text-[13rem] sm:text-[17rem] lg:text-[20rem] ${challenge ? 'top-52 sm:top-56' : '-top-10 lg:-top-16'}`}
           />
 
           <h1 className="relative mt-10 text-[clamp(3.4rem,15.5vw,6rem)] text-text lg:mt-14">
-            Nouă sute
-            <span className="block text-accent-ink">de întrebări</span>
+            Cât știi
+            <span className="block text-accent-ink">despre lume?</span>
           </h1>
 
           <p className="relative mt-7 max-w-[36ch] text-[1.1875rem] leading-[1.5] text-dim sm:text-[1.3125rem]">
@@ -72,8 +71,8 @@ export function StartScreen() {
 
           <dl className="relative mt-10 grid grid-cols-3 gap-5 border-t border-line pt-6">
             {[
-              { label: ro.start.fondLabel, value: QUESTION_COUNT },
-              { label: 'Categorii', value: 10 },
+              { label: ro.start.fondLabel, value: CATEGORIES.length },
+              { label: 'Niveluri', value: 3 },
               { label: 'Pe rundă', value: roundSize },
             ].map((stat) => (
               <div key={stat.label}>

@@ -17,7 +17,7 @@ function q(id: string, category: CategoryId, difficulty: Difficulty, correctInde
     id,
     category,
     difficulty,
-    scope: 'international',
+    region: 'universal',
     question: `Întrebarea ${id}?`,
     options: ['unu', 'doi', 'trei', 'patru'],
     correctIndex,

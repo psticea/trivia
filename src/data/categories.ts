@@ -75,11 +75,11 @@ export const CATEGORIES: CategoryMeta[] = [
     blurb: 'Bucătării ale lumii, ingrediente, băuturi, tehnici',
   },
   {
-    id: 'cultura',
-    prefix: 'rom',
-    name: 'Cultură Românească',
-    short: 'Cultură RO',
-    blurb: 'Tradiții, folclor, obiceiuri, simboluri, limbă',
+    id: 'religie',
+    prefix: 'rel',
+    name: 'Religii și Mitologie',
+    short: 'Religii',
+    blurb: 'Credințe, mituri, texte, sărbători, simboluri',
   },
 ];
 
