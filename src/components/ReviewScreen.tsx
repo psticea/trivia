@@ -1,6 +1,8 @@
 import { categoryName } from '../data/categories';
+import { KID_DIFFICULTY } from '../data/types';
 import { ro } from '../i18n/ro';
 import { useGame } from '../store/useGame';
+import { Bunting } from './KidDecor';
 import { CheckMark, CrossMark } from './Motif';
 
 /**
@@ -18,6 +20,11 @@ export function ReviewScreen() {
 
   return (
     <div className="mx-auto w-full max-w-[1240px] px-5 pb-20 pt-6 sm:px-8 lg:pt-12">
+      {result.difficulty === KID_DIFFICULTY && (
+        <div className="-mx-5 -mt-6 mb-6 sm:-mx-8 lg:-mt-12 lg:mb-10">
+          <Bunting count={16} />
+        </div>
+      )}
       <div className="flex flex-wrap items-end justify-between gap-5">
         <div>
           <p className="label text-faint">{ro.review.counter(result.score, result.total)}</p>

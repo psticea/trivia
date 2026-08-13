@@ -11,11 +11,13 @@ function Sheet({
   open,
   onClose,
   title,
+  corner,
   children,
 }: {
   open: boolean;
   onClose: () => void;
   title: string;
+  corner?: React.ReactNode;
   children: React.ReactNode;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
@@ -39,13 +41,16 @@ function Sheet({
       <div className="flex max-h-[92dvh] flex-col rounded-t-lg border border-line bg-veil sm:rounded-lg">
         <div className="flex shrink-0 items-center justify-between gap-4 px-6 pt-6 sm:px-8">
           <h2 className="text-[1.75rem] text-text">{title}</h2>
-          <button
-            type="button"
-            className="label rounded-full border border-line-hi px-4 py-2.5 text-dim transition-colors hover:border-text hover:text-text"
-            onClick={onClose}
-          >
-            {ro.stats.close}
-          </button>
+          <div className="flex items-center gap-4">
+            {corner}
+            <button
+              type="button"
+              className="label rounded-full border border-line-hi px-4 py-2.5 text-dim transition-colors hover:border-text hover:text-text"
+              onClick={onClose}
+            >
+              {ro.stats.close}
+            </button>
+          </div>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-[max(2rem,env(safe-area-inset-bottom))] pt-6 sm:px-8">
           {children}
@@ -57,12 +62,30 @@ function Sheet({
 
 export function StatsDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const stats = useGame((s) => s.stats);
-  const tiers: Difficulty[] = ['usor', 'mediu', 'dificil'];
+  const tiers: Difficulty[] = ['copii', 'usor', 'mediu', 'dificil'];
   const played = tiers.reduce((n, t) => n + stats.byDifficulty[t].rounds, 0);
   const ranked = rankedCategories(stats);
 
+  const totalAnswered = tiers.reduce((n, t) => n + stats.byDifficulty[t].totalQuestions, 0);
+  const totalCorrect = tiers.reduce((n, t) => n + stats.byDifficulty[t].totalCorrect, 0);
+
   return (
-    <Sheet open={open} onClose={onClose} title={ro.stats.heading}>
+    <Sheet
+      open={open}
+      onClose={onClose}
+      title={ro.stats.heading}
+      corner={
+        totalAnswered > 0 ? (
+          <div className="text-right">
+            <span className="label block text-faint">{ro.stats.overall}</span>
+            <span className="numeral text-[1.5rem] leading-none text-accent-ink">
+              {totalCorrect}
+              <span className="text-faint">/{totalAnswered}</span>
+            </span>
+          </div>
+        ) : null
+      }
+    >
       {played === 0 ? (
         <p className="text-[1.1875rem] leading-snug text-faint">{ro.stats.empty}</p>
       ) : (
@@ -73,27 +96,33 @@ export function StatsDialog({ open, onClose }: { open: boolean; onClose: () => v
               const s = stats.byDifficulty[t];
               const acc = accuracy(s);
               return (
-                <li
-                  key={t}
-                  className="flex items-center gap-4 rounded-md border border-line bg-surface px-4 py-4"
-                >
-                  <span className="flex-1 text-[1.125rem] font-semibold text-text">{DIFFICULTY_LABEL[t]}</span>
-                  <span className="w-14 text-right">
-                    <span className="label block text-faint">{ro.stats.rounds}</span>
-                    <span className="numeral text-[1.25rem] text-text">{s.rounds}</span>
-                  </span>
-                  <span className="w-16 text-right">
-                    <span className="label block text-faint">{ro.stats.average}</span>
-                    <span className="numeral text-[1.25rem] text-text">
-                      {acc === null ? '—' : `${Math.round(acc * 100)}%`}
+                <li key={t} className="rounded-md border border-line bg-surface px-4 py-4">
+                  <div className="flex items-center gap-4">
+                    <span className="flex-1 text-[1.125rem] font-semibold text-text">
+                      {DIFFICULTY_LABEL[t]}
                     </span>
-                  </span>
-                  <span className="w-20 text-right">
-                    <span className="label block text-faint">{ro.stats.best}</span>
-                    <span className="numeral text-[1.25rem] text-accent-ink">
-                      {s.rounds === 0 ? '—' : `${s.best}/${s.bestTotal}`}
+                    <span className="w-14 text-right">
+                      <span className="label block text-faint">{ro.stats.rounds}</span>
+                      <span className="numeral text-[1.25rem] text-text">{s.rounds}</span>
                     </span>
-                  </span>
+                    <span className="w-16 text-right">
+                      <span className="label block text-faint">{ro.stats.average}</span>
+                      <span className="numeral text-[1.25rem] text-text">
+                        {acc === null ? '—' : `${Math.round(acc * 100)}%`}
+                      </span>
+                    </span>
+                    <span className="w-20 text-right">
+                      <span className="label block text-faint">{ro.stats.best}</span>
+                      <span className="numeral text-[1.25rem] text-accent-ink">
+                        {s.rounds === 0 ? '—' : `${s.best}/${s.bestTotal}`}
+                      </span>
+                    </span>
+                  </div>
+                  <p className="label mt-3 border-t border-line pt-3 text-faint">
+                    {s.totalQuestions === 0
+                      ? ro.stats.noAnswers
+                      : ro.stats.answeredLine(s.totalCorrect, s.totalQuestions)}
+                  </p>
                 </li>
               );
             })}

@@ -16,6 +16,17 @@
 [data-theme='dark'] {
   color-scheme: dark;
 
+  /* Tipografia și rotunjimile modului obișnuit. Modul Junior le suprascrie. */
+  --f-display: 'Bricolage Grotesque Variable', 'Archivo Variable', system-ui, sans-serif;
+  --f-body: 'Archivo Variable', system-ui, -apple-system, sans-serif;
+  --f-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', monospace;
+  --f-display-settings: 'wdth' 108, 'opsz' 40, 'wght' 600;
+  --f-numeral-settings: 'wdth' 100, 'opsz' 96, 'wght' 550;
+  --f-display-tracking: -0.028em;
+  --r-lg: 14px;
+  --r-md: 10px;
+  --scale-body: 1;
+
   --c-bg: #0b0b0d;
   --c-bg-veil: #131319;
   --c-surface: #17171b;
@@ -34,6 +45,9 @@
   --c-wrong: #ff5c57;
   --c-wrong-ink: #ff726d;
   --c-wrong-veil: rgba(255, 92, 87, 0.13);
+
+  --c-play: #d6ff3f;
+  --c-play-soft: rgba(214, 255, 63, 0.12);
 }
 
 [data-theme='light'] {
@@ -57,6 +71,98 @@
   --c-wrong: #d93a34;
   --c-wrong-ink: #bd2f29;
   --c-wrong-veil: rgba(217, 58, 52, 0.09);
+
+  --c-play: #46620a;
+  --c-play-soft: rgba(151, 191, 12, 0.16);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MODUL JUNIOR
+   Se aplică doar cât ține o rundă pentru copii, plus rezultatele și
+   recapitularea ei. Nu e „aplicație de copii”, ci aceeași construcție într-un
+   registru de arcade: albastru de miez de noapte, verde viu, galben solar.
+   Regulile care nu se negociază: contrast mare peste tot (text alb pur pe
+   fundal închis), litere groase și deschise, iar verdele rămâne „corect” în
+   ambele moduri, ca reperul să nu se schimbe niciodată.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+[data-mode='kid'][data-theme='dark'] {
+  color-scheme: dark;
+
+  /* Negru, ca la restul jocului. Fundalul colorat — bleumarin, mov — arăta a
+     temă de aplicație, nu a joacă. Copilăria vine din decor: ghirlandă,
+     baloane, confetti, bulinele variantelor. Pe negru toate astea strălucesc
+     mai tare decât pe orice fundal colorat. */
+  --c-bg: #0b0b10;
+  --c-bg-veil: #14141c;
+  --c-surface: #18181f;
+  --c-surface-hi: #23232c;
+  --c-line: #2f2f3a;
+  --c-line-hi: #45454f;
+  /* Alb pur, nu alb-cald: la 9 ani se citește des în lumină proastă. */
+  --c-text: #ffffff;
+  --c-text-dim: #cdcdd6;
+  --c-text-faint: #9a9aa6;
+
+  --c-accent: #3ff2a0;
+  --c-accent-ink: #6affbb;
+  --c-accent-veil: rgba(63, 242, 160, 0.16);
+  --c-on-accent: #032418;
+
+  --c-wrong: #ff6b6b;
+  --c-wrong-ink: #ff9292;
+  --c-wrong-veil: rgba(255, 107, 107, 0.2);
+
+  /* A doua culoare, strict decorativă: niciodată pentru corect sau greșit. */
+  --c-play: #ffd23f;
+  --c-play-soft: rgba(255, 210, 63, 0.16);
+}
+
+[data-mode='kid'][data-theme='light'] {
+  color-scheme: light;
+
+  /* Alb cald de hârtie, ca decorul colorat să aibă pe ce să se vadă. */
+  --c-bg: #fffdf6;
+  --c-bg-veil: #ffffff;
+  --c-surface: #ffffff;
+  --c-surface-hi: #f4f1e8;
+  --c-line: #e6e2d6;
+  --c-line-hi: #c2bcac;
+  --c-text: #16161d;
+  --c-text-dim: #4c4c58;
+  --c-text-faint: #71717e;
+
+  --c-accent: #12b673;
+  --c-accent-ink: #056b41;
+  --c-accent-veil: rgba(18, 182, 115, 0.16);
+  --c-on-accent: #032418;
+
+  --c-wrong: #de3a33;
+  --c-wrong-ink: #b3221c;
+  --c-wrong-veil: rgba(222, 58, 51, 0.1);
+
+  --c-play: #9a5c00;
+  --c-play-soft: rgba(255, 196, 60, 0.3);
+}
+
+/* Tipografie și forme, comune ambelor teme din modul Junior.
+   Lexend e desenat anume ca să crească viteza de citire la copii: litere
+   deschise, fără îngroșări, cu spațiere generoasă. Nu se folosește niciun font
+   „de desen animat” pentru citit — cercetarea arată că literele groase și
+   rotunjite încurcă recunoașterea la 9 ani. Veselia vine din decor, nu din
+   literă: stegulețe, baloane, dungi, confetti. */
+[data-mode='kid'] {
+  --f-display: 'Lexend Variable', system-ui, sans-serif;
+  --f-body: 'Lexend Variable', system-ui, -apple-system, sans-serif;
+  --f-mono: 'Lexend Variable', system-ui, sans-serif;
+  --f-display-settings: 'wght' 600;
+  --f-numeral-settings: 'wght' 700;
+  /* Lexend e proiectat cu spațiere largă; strânsul literelor i-ar anula rostul. */
+  --f-display-tracking: 0;
+  --r-lg: 20px;
+  --r-md: 14px;
+  /* Textul crește puțin: 9 ani, adesea pe telefonul unui părinte. */
+  --scale-body: 1.08;
 }
 
 @theme {
@@ -88,15 +194,20 @@
   --color-transparent: transparent;
   --color-current: currentColor;
 
+  /* Culoare secundară, decorativă. În modul obișnuit e chiar accentul. */
+  --color-play: var(--c-play);
+  --color-play-soft: var(--c-play-soft);
+
   /* Un grotesc contemporan cu axă de lățime pentru titluri, același desen la
      lățime normală pentru text, plus un mono pentru cifre și etichete.
-     Toate trei includ subsetul latin-ext (ă â î ș ț). */
-  --font-display: 'Bricolage Grotesque Variable', 'Archivo Variable', system-ui, sans-serif;
-  --font-body: 'Archivo Variable', system-ui, -apple-system, sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', monospace;
+     Modul Junior le schimbă pe toate cu desene rotunjite (vezi mai jos).
+     Toate includ subsetul latin-ext (ă â î ș ț). */
+  --font-display: var(--f-display);
+  --font-body: var(--f-body);
+  --font-mono: var(--f-mono);
 
-  --radius-lg: 14px;
-  --radius-md: 10px;
+  --radius-lg: var(--r-lg);
+  --radius-md: var(--r-md);
   --radius-full: 999px;
 
   /* Prag suplimentar pentru telefoanele mici (sub 400 px). */
@@ -119,7 +230,7 @@
     background-color: var(--color-bg);
     color: var(--color-text);
     font-family: var(--font-body);
-    font-size: 18px;
+    font-size: calc(18px * var(--scale-body));
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     overscroll-behavior-y: none;
@@ -148,9 +259,9 @@
   h2,
   h3 {
     font-family: var(--font-display);
-    font-variation-settings: 'wdth' 108, 'opsz' 40, 'wght' 600;
+    font-variation-settings: var(--f-display-settings);
     line-height: 1.03;
-    letter-spacing: -0.028em;
+    letter-spacing: var(--f-display-tracking);
     margin: 0;
     text-wrap: balance;
   }
@@ -183,7 +294,7 @@
 
 @utility numeral {
   font-family: var(--font-display);
-  font-variation-settings: 'wdth' 100, 'opsz' 96, 'wght' 550;
+  font-variation-settings: var(--f-numeral-settings);
   font-variant-numeric: tabular-nums lining-nums;
   letter-spacing: -0.035em;
 }
@@ -191,7 +302,7 @@
 /* Motivul recurent: numărul uriaș al momentului, în spatele conținutului. */
 @utility ghost-numeral {
   font-family: var(--font-display);
-  font-variation-settings: 'wdth' 100, 'opsz' 96, 'wght' 700;
+  font-variation-settings: var(--f-numeral-settings);
   font-variant-numeric: tabular-nums lining-nums;
   letter-spacing: -0.06em;
   line-height: 0.72;
@@ -291,5 +402,123 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* ── Ajustări fine pentru modul Junior ─────────────────────────────────── */
+
+[data-mode='kid'] body {
+  font-variation-settings: 'wght' 420;
+  line-height: 1.55;
+}
+
+/* Fundal de bâlci: buline mari și rare, peste două pete de culoare.
+   Totul foarte estompat — trebuie să se simtă, nu să se vadă. */
+[data-mode='kid'] body::before {
+  background:
+    radial-gradient(circle at center, var(--c-play-soft) 2.2px, transparent 2.4px) 0 0 / 34px 34px,
+    radial-gradient(58% 40% at 88% -4%, var(--c-play-soft), transparent 72%),
+    radial-gradient(52% 38% at 4% 2%, var(--c-accent-veil), transparent 72%);
+}
+
+/* Etichetele nu mai strigă: la 9 ani, MAJUSCULELE se citesc mai greu decât
+   literele obișnuite, așa că în modul Junior eticheta e scrisă normal. */
+[data-mode='kid'] .label {
+  text-transform: none;
+  letter-spacing: 0.005em;
+  font-weight: 600;
+  font-variation-settings: 'wght' 600;
+  font-size: 0.875rem;
+}
+
+/* Bulina cu litera variantei își ia culoarea din componentă (un jeton pe
+   variantă); aici rămâne doar greutatea literei. */
+[data-mode='kid'] .option-letter {
+  font-variation-settings: 'wght' 700;
+}
+
+[data-mode='kid'] .btn {
+  font-weight: 700;
+  font-variation-settings: 'wght' 700;
+}
+
+/* Butonul principal capătă relief de tastă, plus o dungă de bâlci pe dedesubt. */
+[data-mode='kid'] .btn-primary {
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--color-accent) 58%, #000);
+}
+
+[data-mode='kid'] .btn-primary:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--color-accent) 58%, #000);
+}
+
+/* ── Decorul propriu-zis ───────────────────────────────────────────────── */
+
+/* Dungi diagonale de cort de circ, folosite ca panglică subțire. */
+.kid-stripes {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--c-play) 0 10px,
+    transparent 10px 20px
+  );
+  opacity: 0.85;
+}
+
+.kid-balloon {
+  animation: kid-float 4.5s ease-in-out infinite;
+}
+
+@keyframes kid-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-9px) rotate(2deg);
+  }
+}
+
+.kid-confetti {
+  position: absolute;
+  left: 1.75rem;
+  top: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.kid-confetti-piece {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  opacity: 0;
+  animation: kid-burst 900ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes kid-burst {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg) scale(0.4);
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) rotate(var(--spin)) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-mode='kid'] .btn-primary:active:not(:disabled) {
+    transform: none;
+  }
+
+  .kid-balloon {
+    animation: none;
+  }
+
+  .kid-confetti {
+    display: none;
   }
 }

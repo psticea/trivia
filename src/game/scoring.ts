@@ -68,7 +68,7 @@ export function emptyStats(): Stats {
     bestTotal: 0,
   });
   return {
-    byDifficulty: { usor: blank(), mediu: blank(), dificil: blank() },
+    byDifficulty: { copii: blank(), usor: blank(), mediu: blank(), dificil: blank() },
     byCategory: {},
   };
 }

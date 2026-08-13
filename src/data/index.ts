@@ -10,6 +10,17 @@ import { tehQuestions } from './questions/tehnologie';
 import { gasQuestions } from './questions/gastronomie';
 import { relQuestions } from './questions/religie';
 
+import { istCopiiQuestions } from './questions/copii/istorie';
+import { geoCopiiQuestions } from './questions/copii/geografie';
+import { stiCopiiQuestions } from './questions/copii/stiinta';
+import { artCopiiQuestions } from './questions/copii/arta';
+import { muzCopiiQuestions } from './questions/copii/muzica';
+import { flmCopiiQuestions } from './questions/copii/film';
+import { spoCopiiQuestions } from './questions/copii/sport';
+import { tehCopiiQuestions } from './questions/copii/tehnologie';
+import { gasCopiiQuestions } from './questions/copii/gastronomie';
+import { relCopiiQuestions } from './questions/copii/religie';
+
 export const QUESTIONS: Question[] = [
   ...istQuestions,
   ...geoQuestions,
@@ -21,6 +32,17 @@ export const QUESTIONS: Question[] = [
   ...tehQuestions,
   ...gasQuestions,
   ...relQuestions,
+
+  ...istCopiiQuestions,
+  ...geoCopiiQuestions,
+  ...stiCopiiQuestions,
+  ...artCopiiQuestions,
+  ...muzCopiiQuestions,
+  ...flmCopiiQuestions,
+  ...spoCopiiQuestions,
+  ...tehCopiiQuestions,
+  ...gasCopiiQuestions,
+  ...relCopiiQuestions,
 ];
 
 export const QUESTION_COUNT = QUESTIONS.length;

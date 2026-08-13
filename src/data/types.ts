@@ -3,7 +3,12 @@
  * Orice modificare aici trebuie reflectată în scripts/validate.ts.
  */
 
-export type Difficulty = 'usor' | 'mediu' | 'dificil';
+/**
+ * Nivelurile de dificultate.
+ * `copii` e gândit pentru 9-10 ani: se joacă separat, cu propriile întrebări,
+ * și schimbă și înfățișarea jocului cât ține runda.
+ */
+export type Difficulty = 'copii' | 'usor' | 'mediu' | 'dificil';
 
 /**
  * Regiunea de care ține subiectul întrebării — nu limba, care e mereu româna.
@@ -50,7 +55,10 @@ export type Question = {
   source?: string;
 };
 
-export const DIFFICULTIES: Difficulty[] = ['usor', 'mediu', 'dificil'];
+export const DIFFICULTIES: Difficulty[] = ['copii', 'usor', 'mediu', 'dificil'];
+
+/** Dificultatea cu reguli proprii de conținut și de aspect. */
+export const KID_DIFFICULTY: Difficulty = 'copii';
 
 export const REGIONS: Region[] = ['ro', 'europa', 'america_nord', 'restul_lumii', 'universal'];
 

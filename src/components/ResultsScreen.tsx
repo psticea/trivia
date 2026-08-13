@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { categoryName } from '../data/categories';
+import { KID_DIFFICULTY } from '../data/types';
 import { DIFFICULTY_LABEL, ro } from '../i18n/ro';
-import { verdictFor } from '../i18n/verdicts';
+import { verdictFor, kidVerdictFor } from '../i18n/verdicts';
 import { averagePerQuestion, formatDuration } from '../game/duration';
 import { useGame } from '../store/useGame';
+import { BalloonCluster, Bunting } from './KidDecor';
 import { CheckMark, GhostNumeral, ScoreBar, ShareIcon } from './Motif';
 
 export function ResultsScreen() {
@@ -23,7 +25,11 @@ export function ResultsScreen() {
   if (!result || !round) return null;
 
   // Verdictul e legat de sămânța rundei, ca să nu se schimbe la re-randare.
-  const verdict = verdictFor(result.score, result.total, round.seed);
+  const kid = result.difficulty === KID_DIFFICULTY;
+  // Ironia merge la adulți; la 9 ani, aceeași glumă doare. Deci alt set de texte.
+  const verdict = kid
+    ? kidVerdictFor(result.score, result.total, round.seed)
+    : verdictFor(result.score, result.total, round.seed);
   const perQuestion = elapsedMs === null ? null : averagePerQuestion(elapsedMs, result.total);
 
   async function handleShare() {
@@ -40,9 +46,15 @@ export function ResultsScreen() {
 
   return (
     <div className="mx-auto w-full max-w-[1240px] px-5 pb-20 pt-6 sm:px-8 lg:pt-12">
+      {kid && (
+        <div className="-mx-5 -mt-6 mb-6 sm:-mx-8 lg:-mt-12 lg:mb-10">
+          <Bunting count={16} />
+        </div>
+      )}
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start lg:gap-20">
         {/* ── Scorul ── */}
         <section className="relative">
+          {kid && <BalloonCluster className="right-0 top-1 lg:right-6 lg:top-2" />}
           <p className="label text-faint">{ro.results.heading}</p>
 
           <div className="mt-4 flex items-end gap-3">

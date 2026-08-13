@@ -24,17 +24,20 @@ const onlyCategory = args.find((a) => a.startsWith('--category='))?.split('=')[1
   | undefined;
 const QUIET = args.includes('--quiet');
 
-const PER_CATEGORY = 150;
+const PER_CATEGORY = 200;
 const PER_TIER = 50;
 const TOTAL = PER_CATEGORY * CATEGORIES.length;
-const DIFFICULTIES: Difficulty[] = ['usor', 'mediu', 'dificil'];
+const DIFFICULTIES: Difficulty[] = ['copii', 'usor', 'mediu', 'dificil'];
 
 /**
- * Ținta de regiuni, per categorie. Jucătorii sunt din România, deci baza e
- * construită dinspre ce cunosc: întâi țara, apoi Europa, apoi America de Nord,
- * apoi restul lumii. Toleranța e ±6 întrebări față de țintă.
+ * Ținta de regiuni, per categorie și per nivel. Jucătorii sunt din România,
+ * deci baza e construită dinspre ce cunosc: întâi țara, apoi Europa, apoi
+ * America de Nord, apoi restul lumii.
+ *
+ * La nivelul „copii” ponderea locală urcă: un copil de 9 ani știe mult mai
+ * bine ce e în jurul lui decât ce e la celălalt capăt al lumii.
  */
-const REGION_TARGET: Record<CategoryId, Record<Region, number>> = {
+const REGION_TARGET_ADULT: Record<CategoryId, Record<Region, number>> = {
   istorie: { ro: 45, europa: 45, america_nord: 30, restul_lumii: 30, universal: 0 },
   geografie: { ro: 45, europa: 45, america_nord: 30, restul_lumii: 30, universal: 0 },
   stiinta: { ro: 30, europa: 40, america_nord: 30, restul_lumii: 15, universal: 35 },
@@ -47,7 +50,29 @@ const REGION_TARGET: Record<CategoryId, Record<Region, number>> = {
   religie: { ro: 45, europa: 40, america_nord: 15, restul_lumii: 45, universal: 5 },
 };
 
-const REGION_TOLERANCE = 6;
+const REGION_TARGET_KIDS: Record<CategoryId, Record<Region, number>> = {
+  istorie: { ro: 20, europa: 14, america_nord: 8, restul_lumii: 8, universal: 0 },
+  geografie: { ro: 20, europa: 14, america_nord: 8, restul_lumii: 8, universal: 0 },
+  stiinta: { ro: 10, europa: 8, america_nord: 6, restul_lumii: 6, universal: 20 },
+  arta: { ro: 20, europa: 16, america_nord: 8, restul_lumii: 6, universal: 0 },
+  muzica: { ro: 20, europa: 14, america_nord: 8, restul_lumii: 4, universal: 4 },
+  film: { ro: 18, europa: 12, america_nord: 14, restul_lumii: 6, universal: 0 },
+  sport: { ro: 20, europa: 14, america_nord: 8, restul_lumii: 8, universal: 0 },
+  tehnologie: { ro: 16, europa: 12, america_nord: 12, restul_lumii: 4, universal: 6 },
+  gastronomie: { ro: 20, europa: 14, america_nord: 6, restul_lumii: 10, universal: 0 },
+  religie: { ro: 20, europa: 14, america_nord: 4, restul_lumii: 12, universal: 0 },
+};
+
+const REGION_TARGET: Record<CategoryId, Record<Region, number>> = Object.fromEntries(
+  CATEGORY_IDS.map((id) => [
+    id,
+    Object.fromEntries(
+      REGIONS.map((r) => [r, REGION_TARGET_ADULT[id][r] + REGION_TARGET_KIDS[id][r]]),
+    ) as Record<Region, number>,
+  ]),
+) as Record<CategoryId, Record<Region, number>>;
+
+const REGION_TOLERANCE = 8;
 
 const failures: string[] = [];
 const warnings: string[] = [];
@@ -60,7 +85,7 @@ const warn = (msg: string) => warnings.push(msg);
 const QuestionSchema = z.object({
   id: z.string().regex(/^[a-z]{3}-\d{3}$/, 'id trebuie să fie de forma "ist-001"'),
   category: z.enum(CATEGORY_IDS as [CategoryId, ...CategoryId[]]),
-  difficulty: z.enum(['usor', 'mediu', 'dificil']),
+  difficulty: z.enum(['copii', 'usor', 'mediu', 'dificil']),
   region: z.enum(REGIONS as [Region, ...Region[]]),
   question: z.string().min(10),
   options: z.tuple([z.string().min(1), z.string().min(1), z.string().min(1), z.string().min(1)]),
@@ -68,7 +93,6 @@ const QuestionSchema = z.object({
   explanation: z.string().min(10),
   source: z.string().min(2).optional(),
 });
-
 // ─────────────────────────────────────────────────────────────────── helpers
 
 const CEDILLA = /[\u015F\u0163\u015E\u0162]/g; // s/t cu sedila (U+015F etc.) - gresite in romana
@@ -221,14 +245,30 @@ function stemLeaks(q: Question): string[] {
 
 async function loadCategory(id: CategoryId): Promise<Question[]> {
   const meta = CATEGORIES.find((c) => c.id === id)!;
+  const out: Question[] = [];
+
   const mod = (await import(`../src/data/questions/${id}.ts`)) as Record<string, unknown>;
-  const key = `${meta.prefix}Questions`;
-  const list = mod[key];
-  if (!Array.isArray(list)) {
-    fail(`${id}: modulul nu exportă "${key}" ca vector.`);
-    return [];
+  const adults = mod[`${meta.prefix}Questions`];
+  if (!Array.isArray(adults)) {
+    fail(`${id}: modulul nu exportă "${meta.prefix}Questions" ca vector.`);
+  } else {
+    out.push(...(adults as Question[]));
   }
-  return list as Question[];
+
+  const kidsMod = (await import(`../src/data/questions/copii/${id}.ts`)) as Record<string, unknown>;
+  const kids = kidsMod[`${meta.prefix}CopiiQuestions`];
+  if (!Array.isArray(kids)) {
+    fail(`${id}: modulul pentru copii nu exportă "${meta.prefix}CopiiQuestions" ca vector.`);
+  } else {
+    for (const q of kids as Question[]) {
+      if (q.difficulty !== 'copii') {
+        fail(`[${q.id}] se află în fișierul pentru copii, dar are dificultatea "${q.difficulty}".`);
+      }
+    }
+    out.push(...(kids as Question[]));
+  }
+
+  return out;
 }
 
 // ───────────────────────────────────────────────────────────────── verificări
@@ -334,11 +374,15 @@ function checkRegions(all: Question[], full: boolean) {
   }
 
   // România trebuie să fie prezentă în fiecare tier, nu doar la întrebările ușoare.
+  // La „copii” ponderea locală e deliberat mai mare: un copil de 9 ani cunoaște
+  // mult mai bine ce e în jurul lui.
   for (const d of DIFFICULTIES) {
     const tier = all.filter((q) => q.difficulty === d);
+    if (tier.length === 0) continue;
     const share = pct(tier.filter((q) => q.region === 'ro').length, tier.length);
-    if (share < 22 || share > 38) {
-      fail(`Tier „${d}”: pondere „ro” ${share.toFixed(1)}% — trebuie între 22% și 38%.`);
+    const [lo, hi] = d === 'copii' ? [28, 46] : [22, 38];
+    if (share < lo || share > hi) {
+      fail(`Tier „${d}”: pondere „ro” ${share.toFixed(1)}% — trebuie între ${lo}% și ${hi}%.`);
     }
   }
 }
@@ -532,6 +576,7 @@ function report(all: Question[], full: boolean) {
   const head =
     'Categorie'.padEnd(20) +
     'Tot'.padStart(5) +
+    'Copii'.padStart(7) +
     'Ușor'.padStart(6) +
     'Mediu'.padStart(7) +
     'Dific'.padStart(7) +
@@ -546,6 +591,7 @@ function report(all: Question[], full: boolean) {
     console.log(
       cat.name.padEnd(20) +
         String(inCat.length).padStart(5) +
+        String(d('copii')).padStart(7) +
         String(d('usor')).padStart(6) +
         String(d('mediu')).padStart(7) +
         String(d('dificil')).padStart(7) +
@@ -557,6 +603,7 @@ function report(all: Question[], full: boolean) {
   console.log(
     'TOTAL'.padEnd(20) +
       String(all.length).padStart(5) +
+      String(all.filter((q) => q.difficulty === 'copii').length).padStart(7) +
       String(all.filter((q) => q.difficulty === 'usor').length).padStart(6) +
       String(all.filter((q) => q.difficulty === 'mediu').length).padStart(7) +
       String(all.filter((q) => q.difficulty === 'dificil').length).padStart(7) +

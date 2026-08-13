@@ -37,9 +37,11 @@ export const ro = {
   },
 
   difficulty: {
+    copii: 'Junior',
     usor: 'Ușor',
     mediu: 'Mediu',
     dificil: 'Dificil',
+    copiiHint: 'Pentru copii de școală primară',
     usorHint: 'Lucruri pe care le știe aproape toată lumea',
     mediuHint: 'Îți trebuie ceva atenție la subiect',
     dificilHint: 'Pentru cine chiar ține la cultura generală',
@@ -91,10 +93,14 @@ export const ro = {
 
   stats: {
     heading: 'Statistici',
+    overall: 'Total',
     empty: 'Nicio rundă terminată încă. Statisticile apar după prima.',
     rounds: 'Runde',
     average: 'Corecte',
     best: 'Record',
+    answeredLine: (correct: number, answered: number) =>
+      `${correct} corecte din ${answered} întrebări`,
+    noAnswers: 'Nicio întrebare încă',
     perDifficulty: 'Pe dificultăți',
     strongest: 'Cele mai bune categorii',
     weakest: 'Categoriile care îți dau bătăi de cap',
@@ -139,7 +145,8 @@ export const ro = {
   },
 } as const;
 
-export const DIFFICULTY_LABEL: Record<'usor' | 'mediu' | 'dificil', string> = {
+export const DIFFICULTY_LABEL: Record<'copii' | 'usor' | 'mediu' | 'dificil', string> = {
+  copii: ro.difficulty.copii,
   usor: ro.difficulty.usor,
   mediu: ro.difficulty.mediu,
   dificil: ro.difficulty.dificil,

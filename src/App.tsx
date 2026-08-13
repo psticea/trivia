@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { KID_DIFFICULTY } from './data/types';
 import { ro } from './i18n/ro';
 import { useGame } from './store/useGame';
 import { StartScreen } from './components/StartScreen';
@@ -6,6 +7,7 @@ import { QuestionScreen } from './components/QuestionScreen';
 import { ResultsScreen } from './components/ResultsScreen';
 import { ReviewScreen } from './components/ReviewScreen';
 import { SettingsDialog, StatsDialog } from './components/Dialogs';
+import { applyMode } from './theme';
 
 export default function App() {
   const screen = useGame((s) => s.screen);
@@ -17,6 +19,23 @@ export default function App() {
 
   const [statsOpen, setStatsOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+
+  /**
+   * Înfățișarea Junior ține de rundă, nu de preferință: se aprinde cât se joacă
+   * o rundă pentru copii și cât se citesc rezultatele ei, apoi se stinge. Pe
+   * ecranul de start, în setări și în statistici jocul arată ca de obicei.
+   */
+  const kidRound = round?.difficulty === KID_DIFFICULTY;
+  const kidMode =
+    kidRound &&
+    (screen === 'question' || screen === 'results' || screen === 'review') &&
+    // Statisticile și setările sunt ale părintelui: acolo jocul revine la normal.
+    !statsOpen &&
+    !settingsOpen;
+
+  useEffect(() => {
+    applyMode(kidMode ? 'kid' : 'normal');
+  }, [kidMode]);
 
   // Joc complet de la tastatură: 1–4 aleg răspunsul, Enter/Space avansează.
   const onKeyDown = useCallback(

@@ -10,8 +10,8 @@ export type SharePayload = {
   score: number | null;
 };
 
-const DIFF_CODE: Record<Difficulty, string> = { usor: 'u', mediu: 'm', dificil: 'd' };
-const CODE_DIFF: Record<string, Difficulty> = { u: 'usor', m: 'mediu', d: 'dificil' };
+const DIFF_CODE: Record<Difficulty, string> = { copii: 'j', usor: 'u', mediu: 'm', dificil: 'd' };
+const CODE_DIFF: Record<string, Difficulty> = { j: 'copii', u: 'usor', m: 'mediu', d: 'dificil' };
 const VERSION = '1';
 
 function toBase64Url(input: string): string {

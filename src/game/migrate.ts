@@ -1,6 +1,7 @@
 import { CATEGORY_IDS, isKnownCategory } from '../data/categories';
 import { QUESTIONS } from '../data';
 import type { CategoryId, Difficulty } from '../data/types';
+import { DIFFICULTIES } from '../data/types';
 import { emptyStats, type Stats } from './scoring';
 import { KEYS, readJson, removeKey, STORAGE_VERSION, writeJson } from './storage';
 import { ROUND_SIZE, ROUND_SIZES, type RoundSize, type SeenMap } from './select';
@@ -17,7 +18,7 @@ import { ROUND_SIZE, ROUND_SIZES, type RoundSize, type SeenMap } from './select'
  */
 
 export function sanitizeDifficulty(value: unknown): Difficulty {
-  return value === 'usor' || value === 'mediu' || value === 'dificil' ? value : 'mediu';
+  return (DIFFICULTIES as string[]).includes(value as string) ? (value as Difficulty) : 'mediu';
 }
 
 export function sanitizeCategories(value: unknown): CategoryId[] {
@@ -46,7 +47,7 @@ export function sanitizeStats(value: unknown): Stats {
   const stored = value as Partial<Stats>;
 
   const byDifficulty = { ...base.byDifficulty };
-  for (const tier of ['usor', 'mediu', 'dificil'] as Difficulty[]) {
+  for (const tier of DIFFICULTIES) {
     const s = stored.byDifficulty?.[tier];
     if (!s || typeof s !== 'object') continue;
     const rounds = num(s.rounds);

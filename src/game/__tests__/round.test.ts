@@ -250,6 +250,13 @@ describe('linkuri de partajare', () => {
     expect(decodeShare(encodeShare(zero))!.score).toBe(0);
   });
 
+  it('duce și o rundă Junior, cu treapta ei cu tot', () => {
+    const junior = { ...payload, difficulty: 'copii' as Difficulty };
+    const decoded = decodeShare(encodeShare(junior));
+    expect(decoded).toEqual(junior);
+    expect(decoded!.difficulty).toBe('copii');
+  });
+
   it('produce un token sigur pentru URL', () => {
     expect(encodeShare(payload)).toMatch(/^[A-Za-z0-9_-]+$/);
   });

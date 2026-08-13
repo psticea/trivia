@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { categoryName } from '../data/categories';
+import { KID_DIFFICULTY } from '../data/types';
 import { DIFFICULTY_LABEL, OPTION_LETTERS, ro } from '../i18n/ro';
 import { TIMER_SECONDS, useGame } from '../store/useGame';
+import { Balloon, Bunting, Confetti, kidColor } from './KidDecor';
 import { ArrowRight, CheckMark, CrossMark, GhostNumeral, ProgressRail, ShareIcon } from './Motif';
 
 export function QuestionScreen() {
@@ -82,11 +84,13 @@ export function QuestionScreen() {
   );
   const isLast = index === total - 1;
   const answeredCorrectly = revealed && selected === question.correctIndex;
+  const kid = question.difficulty === KID_DIFFICULTY;
 
   return (
     <div className="flex h-[100dvh] flex-col overflow-hidden">
       <div className="shrink-0 px-4 pt-[max(0.5rem,env(safe-area-inset-top))] sm:px-6">
         <ProgressRail total={total} current={index} results={results} />
+        {kid && <Bunting />}
       </div>
 
       <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto">
@@ -94,7 +98,12 @@ export function QuestionScreen() {
           {/* ── Antetul rundei ── */}
           <div className="flex items-center justify-between gap-4 pt-4 lg:pt-6">
             <div className="flex min-w-0 items-center gap-2.5">
-              <span className="label truncate text-[0.75rem] text-accent-ink sm:text-[0.8125rem]">{category}</span>
+              <span
+                className="label truncate text-[0.75rem] text-accent-ink sm:text-[0.8125rem]"
+                style={kid ? { color: kidColor(index) } : undefined}
+              >
+                {category}
+              </span>
               <span aria-hidden="true" className="text-line-hi">
                 /
               </span>
@@ -172,18 +181,33 @@ export function QuestionScreen() {
               transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
               className="relative lg:grid lg:min-h-[74vh] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:items-center lg:gap-16"
             >
-              <GhostNumeral
-                value={String(index + 1).padStart(2, '0')}
-                className="-top-2 right-0 text-[8rem] sm:text-[11rem] lg:top-6 lg:left-0 lg:text-[19rem]"
-              />
+              {!kid && (
+                <GhostNumeral
+                  value={String(index + 1).padStart(2, '0')}
+                  className="-top-2 right-0 text-[8rem] sm:text-[11rem] lg:top-6 lg:left-0 lg:text-[19rem]"
+                />
+              )}
 
               {/* Cutie cu înălțime rezervată: opțiunile nu se mișcă între întrebări. */}
               <div className="relative flex min-h-[9rem] items-end pt-6 sm:min-h-[10rem] lg:min-h-0 lg:items-center lg:pt-0">
+                {/* Balonul stă în coloana întrebării, nu peste toată grila:
+                    altfel, pe ecran lat, ar ateriza peste variantele de răspuns. */}
+                {kid && (
+                  <Balloon
+                    value={index + 1}
+                    index={index}
+                    className="-top-2 right-0 h-[7.4rem] w-[5.6rem] sm:h-[8.6rem] sm:w-[6.5rem] lg:top-0 lg:h-[11.5rem] lg:w-[8.7rem]"
+                  />
+                )}
                 <h2
                   ref={headingRef}
                   tabIndex={-1}
                   id="question-text"
-                  className="text-[clamp(1.75rem,7vw,3rem)] text-text outline-none"
+                  className={[
+                    'text-[clamp(1.75rem,7vw,3rem)] text-text outline-none',
+                    // Textul nu are voie să treacă pe sub balon: balonul e opac.
+                    kid ? 'pr-[6.4rem] sm:pr-[7.4rem] lg:pr-[9.6rem]' : '',
+                  ].join(' ')}
                 >
                   {question.question}
                 </h2>
@@ -210,7 +234,7 @@ export function QuestionScreen() {
                         onClick={() => answer(originalIndex)}
                         aria-label={`${ro.a11y.optionPrefix(OPTION_LETTERS[slot])}: ${question.options[originalIndex]}`}
                         className={[
-                          'group flex min-h-[4.25rem] w-full items-center gap-4 rounded-lg border px-4 py-3.5 text-left',
+                          'group relative flex min-h-[4.25rem] w-full items-center gap-4 rounded-lg border px-4 py-3.5 text-left',
                           'transition-[background-color,border-color,opacity,transform] duration-[var(--dur-fast)] ease-[var(--ease-out-expo)]',
                           showCorrect
                             ? 'border-accent bg-accent-veil text-text'
@@ -224,13 +248,27 @@ export function QuestionScreen() {
                         ].join(' ')}
                       >
                         <span
+                          style={
+                            // Bulina fiecărei variante e un jeton colorat plin,
+                            // cu literă neagră: patru culori se citesc dintr-o
+                            // privire și contrastul ține și pe alb, și pe negru.
+                            // La răspuns, culoarea lasă locul verdelui sau
+                            // roșului — semnalul rămâne unul singur.
+                            kid && !showCorrect && !showWrong
+                              ? {
+                                  color: '#0b0b10',
+                                  borderColor: kidColor(slot),
+                                  backgroundColor: kidColor(slot),
+                                }
+                              : undefined
+                          }
                           className={[
-                            'label flex size-8 shrink-0 items-center justify-center rounded-full border transition-colors',
+                            'label relative flex size-8 shrink-0 items-center justify-center rounded-full border transition-colors',
                             showCorrect
                               ? 'border-accent bg-accent text-on-accent'
                               : showWrong
                                 ? 'border-wrong bg-wrong text-bg'
-                                : 'border-line-hi text-faint group-hover:border-text group-hover:text-text',
+                                : 'option-letter border-line-hi text-faint group-hover:border-text group-hover:text-text',
                           ].join(' ')}
                         >
                           {showCorrect ? (
@@ -246,6 +284,7 @@ export function QuestionScreen() {
                         </span>
                         {showCorrect && <span className="label shrink-0 text-accent-ink">{ro.round.correct}</span>}
                         {showWrong && <span className="label shrink-0 text-wrong-ink">{ro.round.incorrect}</span>}
+                        {kid && showCorrect && <Confetti reduceMotion={!!reduceMotion} />}
                       </button>
                     );
                   })}

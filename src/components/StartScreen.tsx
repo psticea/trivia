@@ -5,6 +5,7 @@ import { MIN_CATEGORIES, ROUND_SIZES, useGame } from '../store/useGame';
 import { ArrowRight, CheckMark, GhostNumeral } from './Motif';
 
 const DIFFICULTIES: { id: Difficulty; label: string; hint: string }[] = [
+  { id: 'copii', label: ro.difficulty.copii, hint: ro.difficulty.copiiHint },
   { id: 'usor', label: ro.difficulty.usor, hint: ro.difficulty.usorHint },
   { id: 'mediu', label: ro.difficulty.mediu, hint: ro.difficulty.mediuHint },
   { id: 'dificil', label: ro.difficulty.dificil, hint: ro.difficulty.dificilHint },
@@ -76,7 +77,7 @@ export function StartScreen() {
           <dl className="relative mt-7 grid grid-cols-3 gap-4 border-t border-line pt-5 short:mt-5 short:pt-4 sm:mt-10 sm:gap-5 sm:pt-6">
             {[
               { label: ro.start.fondLabel, value: CATEGORIES.length },
-              { label: 'Niveluri', value: 3 },
+              { label: 'Niveluri', value: DIFFICULTIES.length },
               { label: 'Pe rundă', value: roundSize },
             ].map((stat) => (
               <div key={stat.label}>
@@ -94,12 +95,12 @@ export function StartScreen() {
           {challenge && <p className="mb-6 text-[1rem] leading-snug text-faint">{ro.start.settingsApplyToNewRound}</p>}
           <fieldset className="border-0 p-0">
             <legend className="label text-faint">{ro.start.chooseDifficulty}</legend>
-            <div className="relative mt-4 grid grid-cols-3 rounded-full border border-line bg-surface p-1.5">
+            <div className="relative mt-4 grid grid-cols-4 rounded-full border border-line bg-surface p-1.5">
               <span
                 aria-hidden="true"
                 className="absolute inset-y-1.5 left-1.5 rounded-full bg-accent transition-transform duration-[var(--dur-slow)] ease-[var(--ease-out-expo)]"
                 style={{
-                  width: 'calc((100% - 0.75rem) / 3)',
+                  width: 'calc((100% - 0.75rem) / 4)',
                   transform: `translateX(${activeIndex * 100}%)`,
                 }}
               />
@@ -112,7 +113,7 @@ export function StartScreen() {
                     aria-pressed={active}
                     onClick={() => setDifficulty(d.id)}
                     className={[
-                      'relative z-10 min-h-14 rounded-full px-2 text-[1.125rem] font-semibold transition-colors duration-[var(--dur-fast)]',
+                      'relative z-10 min-h-14 rounded-full px-1 text-[0.9375rem] font-semibold transition-colors duration-[var(--dur-fast)] xs:text-[1.0625rem]',
                       active ? 'text-on-accent' : 'text-dim hover:text-text',
                     ].join(' ')}
                   >

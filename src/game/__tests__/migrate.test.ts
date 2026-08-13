@@ -90,6 +90,34 @@ describe('curățarea datelor salvate de o ediție veche', () => {
     expect(stats.byDifficulty.mediu.bestTotal).toBe(20);
     expect(stats.byCategory.sport).toEqual({ correct: 3, total: 4 });
   });
+
+  /**
+   * Junior a apărut după ce oamenii jucaseră deja: statisticile lor salvate nu
+   * au deloc treapta asta. Trebuie completată, nu lăsată `undefined`, altfel
+   * ecranul de statistici cade exact cum a căzut la ștergerea unei categorii.
+   */
+  it('adaugă treapta Junior în statisticile salvate înainte de ea', () => {
+    const stats = sanitizeStats({
+      byDifficulty: {
+        usor: { rounds: 2, totalCorrect: 12, totalQuestions: 20, best: 7, bestTotal: 10 },
+        mediu: { rounds: 0, totalCorrect: 0, totalQuestions: 0, best: 0, bestTotal: 0 },
+        dificil: { rounds: 0, totalCorrect: 0, totalQuestions: 0, best: 0, bestTotal: 0 },
+      },
+      byCategory: {},
+    });
+    expect(stats.byDifficulty.copii).toEqual({
+      rounds: 0,
+      totalCorrect: 0,
+      totalQuestions: 0,
+      best: 0,
+      bestTotal: 0,
+    });
+    expect(stats.byDifficulty.usor.rounds).toBe(2);
+  });
+
+  it('acceptă Junior ca dificultate salvată', () => {
+    expect(sanitizeDifficulty('copii')).toBe('copii');
+  });
 });
 
 /** Fiecare categorie folosită de întrebări trebuie să existe în configurație. */
