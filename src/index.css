@@ -1,5 +1,9 @@
 @import 'tailwindcss';
 
+/* Telefoanele scunde (SE, ecrane vechi de 640–700 px) au nevoie de un antet
+   mai strâns, altfel selectorul de dificultate cade sub bara fixă de jos. */
+@custom-variant short (@media (max-height: 720px));
+
 /* ═══════════════════════════════════════════════════════════════════════
    CONCEPT: un panou de control redus la esențial — fundal aproape negru,
    tipografie mare și un singur gest de culoare, verde citric, care

@@ -28,7 +28,7 @@ export function StartScreen() {
   const activeHint = DIFFICULTIES[activeIndex]?.hint ?? '';
 
   return (
-    <div className="mx-auto w-full max-w-[1240px] px-5 pb-36 pt-4 sm:px-8 lg:pb-20 lg:pt-8">
+    <div className="mx-auto w-full max-w-[1240px] px-5 pb-36 pt-2 short:pt-1 sm:px-8 sm:pt-4 lg:pb-20 lg:pt-8">
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start lg:gap-20">
         {/* ── Titlul ── */}
         <header className="relative lg:sticky lg:top-16">
@@ -57,19 +57,23 @@ export function StartScreen() {
 
           <GhostNumeral
             value="?"
-            className={`-right-2 text-[13rem] sm:text-[17rem] lg:text-[20rem] ${challenge ? 'top-52 sm:top-56' : '-top-10 lg:-top-16'}`}
+            className={`-right-2 text-[11rem] sm:text-[17rem] lg:text-[20rem] ${challenge ? 'top-52 sm:top-56' : '-top-6 lg:-top-16'}`}
           />
 
-          <h1 className="relative mt-10 text-[clamp(3.4rem,15.5vw,6rem)] text-text lg:mt-14">
+          {/* 14vw ține „despre lume?” pe un singur rând chiar și la 320 px lățime.
+              text-wrap:normal anulează echilibrarea moștenită din foaia de stil:
+              „balance” rupea rândul al doilea în două, împingând selectorul de
+              dificultate sub linia de plutire pe telefoanele scunde. */}
+          <h1 className="relative mt-6 text-[clamp(2.6rem,14vw,6rem)] text-text [text-wrap:normal] short:mt-2 sm:mt-10 lg:mt-14">
             Cât știi
             <span className="block text-accent-ink">despre lume?</span>
           </h1>
 
-          <p className="relative mt-7 max-w-[36ch] text-[1.1875rem] leading-[1.5] text-dim sm:text-[1.3125rem]">
+          <p className="relative mt-5 max-w-[36ch] text-[1.1875rem] leading-[1.45] text-dim short:mt-4 sm:mt-7 sm:text-[1.3125rem] sm:leading-[1.5]">
             {ro.meta.subtitle}
           </p>
 
-          <dl className="relative mt-10 grid grid-cols-3 gap-5 border-t border-line pt-6">
+          <dl className="relative mt-7 grid grid-cols-3 gap-4 border-t border-line pt-5 short:mt-5 short:pt-4 sm:mt-10 sm:gap-5 sm:pt-6">
             {[
               { label: ro.start.fondLabel, value: CATEGORIES.length },
               { label: 'Niveluri', value: 3 },
@@ -77,14 +81,16 @@ export function StartScreen() {
             ].map((stat) => (
               <div key={stat.label}>
                 <dt className="label text-faint">{stat.label}</dt>
-                <dd className="numeral mt-2 text-[2.1rem] leading-none text-text">{stat.value}</dd>
+                <dd className="numeral mt-1.5 text-[1.8rem] leading-none text-text short:text-[1.6rem] sm:mt-2 sm:text-[2.1rem]">
+                  {stat.value}
+                </dd>
               </div>
             ))}
           </dl>
         </header>
 
         {/* ── Configurarea rundei ── */}
-        <section className="mt-14 lg:mt-16">
+        <section className="mt-9 short:mt-5 sm:mt-14 lg:mt-16">
           {challenge && <p className="mb-6 text-[1rem] leading-snug text-faint">{ro.start.settingsApplyToNewRound}</p>}
           <fieldset className="border-0 p-0">
             <legend className="label text-faint">{ro.start.chooseDifficulty}</legend>
@@ -239,7 +245,7 @@ export function StartScreen() {
 
       {/* Bara fixă urmează aceeași ierarhie: provocarea e acțiunea principală. */}
       <div className="pointer-events-none fixed inset-x-0 bottom-0 z-20 lg:hidden">
-        <div className="h-12 bg-gradient-to-t from-bg to-transparent" />
+        <div className="h-12 bg-gradient-to-t from-bg to-transparent short:h-8" />
         <div className="pointer-events-auto bg-bg px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-1">
           {challenge ? (
             <div className="flex gap-2.5">
