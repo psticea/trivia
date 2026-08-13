@@ -5,10 +5,21 @@
  * întâmplare. Sunt scrise pe scor exact, nu pe intervale: 9 din 10 și 10 din 10
  * merită reacții diferite, la fel 0 din 20 și 0 din 10.
  *
- * În fiecare grup, cel puțin una e de râs. Gluma e mereu despre situație sau
- * despre joc, niciodată pe seama jucătorului — diferența dintre „hai că mai
- * încerci” și „ești prost”. Câteva se sprijină pe un fapt real: ghicitul pe
- * nimereală, cu patru variante, dă în medie 2,5 din 10 și 5 din 20.
+ * La adulți, cele cinci nu sunt cinci variante ale aceleiași propoziții — asta
+ * era plictiseala versiunii dintâi, unde patru din cinci spuneau „șase din
+ * douăzeci” cu alte cuvinte. Fiecare grup are un amestec fix, pe poziții:
+ *
+ *   [0]    ironică — seacă, cu o întorsătură
+ *   [1..2] amuzante — glumă adevărată, cu imagine
+ *   [3..4] neutre — spun ceva relevant despre scor, fără glumă
+ *
+ * Poziția nu schimbă alegerea, care rămâne la întâmplare; e doar rețeta după
+ * care se scriu, ca să nu alunece iar toate cinci în același registru.
+ *
+ * Gluma e mereu despre situație sau despre joc, niciodată pe seama jucătorului
+ * — diferența dintre „hai că mai încerci” și „ești prost”. Câteva se sprijină
+ * pe un fapt real: ghicitul pe nimereală, cu patru variante, dă în medie 2,5
+ * din 10 și 5 din 20.
  *
  * Toate sunt scurte: apar ca titlu mare pe ecranul de rezultate.
  */
@@ -17,91 +28,91 @@
 const VERDICTS_10: string[][] = [
   // 0
   [
-    'Zero. Măcar punctul de plecare e clar.',
-    'Statistic, ghicitul pe nimereală dădea 2,5.',
-    'Runda asta a fost a întrebărilor. Toate.',
-    'Nimic nimerit. Se întâmplă.',
-    'Niciunul. Mai rău de atât nu are cum.',
+    'Zero. Măcar e un rezultat curat.',
+    'Zece întrebări au trecut pe lângă tine fluierând.',
+    'Nici măcar din greșeală. Impresionant în felul lui.',
+    'Zero din zece. Se întâmplă, mai ales pe necunoscut.',
+    'Niciunul. De aici, orice rundă e mai bună.',
   ],
   // 1
   [
     'Unul. Nu pleci chiar cu mâna goală.',
-    'Cu ochii închiși ieșea statistic mai bine.',
-    'Un punct, singur pe tablă.',
-    'Unu din zece. Tot e un început.',
+    'Un punct singur pe tablă. Ca un pahar uitat.',
+    'Ghicitul pe nimereală ieșea mai bine. Serios.',
+    'Unu din zece. Un început, atât.',
     'Un răspuns bun. Restul, data viitoare.',
   ],
   // 2
   [
     'Două. Începe să semene a scor.',
-    'Exact cât scotea și o monedă aruncată.',
-    'Două nimerite, opt ratate.',
-    'Doar două. Întrebările au fost în formă.',
-    'Două puncte. Puține, dar ale tale.',
+    'Exact cât scotea și o monedă aruncată de zece ori.',
+    'Două. Cam cât nimerește pisica pe tastatură.',
+    'Două bune din zece. Puține, dar ale tale.',
+    'Sub prag, dar nu de la zero.',
   ],
   // 3
   [
     'Trei. Ai învins hazardul. La limită.',
+    'Trei. Cu doar o jumătate de punct peste pura nimereală.',
+    'Trei. Cât o notă de la un profesor bine dispus.',
     'Trei din zece. Ai prins câteva.',
-    'Trei bune. Restul, altă dată.',
-    'Sub jumătate, dar nu chiar de la zero.',
-    'Trei. Mai încearcă, sunt destule.',
+    'Trei bune. Mai sunt destule întrebări.',
   ],
   // 4
   [
     'Patru. Exact nota de pe teza aia.',
-    'Patru. Aproape de jumătate.',
-    'Puțin sub prag.',
-    'Patru bune. Se putea și mai rău.',
+    'Patru. Restul întrebărilor s-au făcut că plouă.',
+    'Patru. Jumătatea ți-a făcut cu mâna de departe.',
+    'Patru bune din zece. Puțin sub prag.',
     'Aproape jumătate. Aproape.',
   ],
   // 5
   [
     'Cinci curat. Trecere la limită.',
+    'Cinci și cinci. Nici tu, nici întrebările.',
+    'Jumate-jumate, ca la împărțit ultima felie.',
     'Jumătate. Fix la mijloc.',
-    'Cinci și cinci. Perfect echilibrat.',
-    'Ai împărțit dreptatea cu întrebările.',
-    'La egalitate cu jocul.',
+    'Cinci bune, cinci ratate.',
   ],
   // 6
   [
     'Șase. Trecut, dar fără laude.',
-    'Șase din zece. Ai luat avantajul.',
-    'Mai multe bune decât rele.',
+    'Șase. Suficient cât să spui că a fost ușor.',
+    'Șase din zece, adică patru povești de spus acasă.',
     'Peste jumătate, cu ceva marjă.',
-    'Șase. Un scor decent.',
+    'Șase bune. Un scor decent.',
   ],
   // 7
   [
     'Șapte. Nota care nu supăra pe nimeni.',
+    'Șapte. Trei întrebări îți poartă pică.',
+    'Șapte. Destul cât să te crezi bun la toate.',
     'Șapte din zece. Solid.',
     'Ai pierdut doar trei.',
-    'Șapte bune. Se vede că știi.',
-    'Scor bun, cu trei scăpări.',
   ],
   // 8
   [
     'Opt. Media care ținea bursa.',
-    'Opt din zece. Aproape de vârf.',
-    'Doar două ți-au scăpat.',
+    'Opt. Două întrebări au scăpat cu viață.',
+    'Opt din zece. Restul două se prefac că nu te cunosc.',
     'Opt bune din zece. Serios.',
-    'Aproape perfect.',
+    'Doar două ți-au scăpat.',
   ],
   // 9
   [
     'Nouă. Una singură ți-a stricat carnetul.',
-    'Nouă din zece. O singură scăpare.',
-    'Doar una ți-a scăpat.',
-    'Aproape tot. Aproape.',
+    'Nouă. Aia una o să-ți vină în minte diseară.',
+    'Nouă din zece. A rămas o întrebare să te țină modest.',
     'Nouă bune. Excelent.',
+    'Doar una ți-a scăpat.',
   ],
   // 10
   [
     'Zece. Poți să-l pui pe frigider.',
-    'Zece din zece. Impecabil.',
-    'Tot. Fără nicio greșeală.',
+    'Zece din zece. Cineva a învățat pentru asta.',
+    'Tot. Întrebările se retrag ofensate.',
     'Perfect. Nimic de comentat.',
-    'Runda ta, de la cap la coadă.',
+    'Zece din zece, de la cap la coadă.',
   ],
 ];
 
@@ -110,170 +121,170 @@ const VERDICTS_20: string[][] = [
   // 0
   [
     'Douăzeci de întrebări și niciun accident fericit.',
-    'Zero din douăzeci. Runda a trecut pe lângă tine.',
-    'Nimic. Măcar ai mers până la capăt.',
-    'Zero. Rar se întâmplă, în ambele sensuri.',
+    'Zero din douăzeci. Statistic, e o performanță.',
+    'Douăzeci la zero. Întrebările sărbătoresc undeva.',
+    'Zero. Runda a trecut complet pe lângă tine.',
     'Niciunul din douăzeci. O luăm altfel.',
   ],
   // 1
   [
     'Unul. Și ăla pare venit din întâmplare.',
-    'Un punct la douăzeci de întrebări.',
-    'Unul singur a nimerit.',
+    'Un punct în douăzeci de întrebări. Aproape o colecție.',
+    'Unul. L-ai găsit cum găsești un leu pe stradă.',
     'Unu din douăzeci. Început greu.',
     'Un răspuns bun în toată runda.',
   ],
   // 2
   [
     'Două. Zarul ar fi făcut treabă mai bună.',
+    'Două. Ai bătut moneda, dar nu și zarul.',
+    'Două din douăzeci, adică optsprezece păreri de rău.',
     'Două din douăzeci. Drum greu.',
-    'Două nimerite din douăzeci.',
-    'Doi din douăzeci. Se poate construi.',
     'Două puncte. Puțin, dar nu nimic.',
   ],
   // 3
   [
     'Trei. Hazardul te-ar fi ajutat mai mult.',
+    'Trei. Nimereala pură scotea cinci, dar cine numără.',
+    'Trei din douăzeci. Restul s-au ascuns bine.',
     'Trei din douăzeci. Începutul e greu.',
-    'Trei bune. Restul, la revanșă.',
-    'Trei. Runda a fost lungă și dură.',
-    'Trei puncte. Mai e mult teren.',
+    'Trei bune. Mai e mult teren.',
   ],
   // 4
   [
     'Patru. Cu un punct sub pura nimereală.',
-    'Patru din douăzeci. Un sfert de sfert.',
-    'Patru. Se adună încet.',
-    'Patru bune din douăzeci.',
-    'Patru puncte. Mergem mai departe.',
+    'Patru. O monedă aruncată ar cere procent.',
+    'Patru din douăzeci. Un sfert de sfert, cum ar veni.',
+    'Patru corecte, șaisprezece ratate.',
+    'Patru puncte. Se adună încet.',
   ],
   // 5
   [
     'Cinci. Fix cât nimerea și o pisică pe tastatură.',
+    'Exact media ghicitului. Nici mai sus, nici mai jos.',
+    'Cinci din douăzeci. Ai jucat la egalitate cu norocul.',
     'Cinci din douăzeci. Un sfert exact.',
     'Un sfert din runda dublă.',
-    'Cinci bune. Mai e mult.',
-    'Un sfert. Nu-i rău de unde ai plecat.',
   ],
   // 6
   [
     'Șase. Ai depășit hazardul cu un fir de păr.',
+    'Șase. Cu un punct peste ce dădea aruncatul cu banul.',
+    'Șase din douăzeci. Paisprezece te-au refuzat politicos.',
     'Șase din douăzeci. Prinde contur.',
     'Șase bune. Încă sub jumătate.',
-    'Șase. Runda lungă cere răbdare.',
-    'Șase puncte. Se vede progresul.',
   ],
   // 7
   [
     'Șapte. De aici încolo contează priceperea.',
+    'Șapte. Norocul și-a luat mâna, se vede.',
+    'Șapte din douăzeci. Câteva domenii te-au ținut la ușă.',
     'Șapte din douăzeci. Mai e până la mijloc.',
-    'Șapte bune. Drumul continuă.',
-    'Șapte. Câteva domenii te-au încurcat.',
     'Șapte puncte adunate.',
   ],
   // 8
   [
     'Opt. Încă două și era jumătate. Clasic.',
+    'Opt. Jumătatea se vede de aici, dar nu se atinge.',
+    'Opt din douăzeci. Douăsprezece stau și se uită la tine.',
     'Opt din douăzeci. Aproape de mijloc.',
     'Opt bune. Se apropie jumătatea.',
-    'Opt. Runda lungă cere rezistență.',
-    'Opt puncte. Prinde bine.',
   ],
   // 9
   [
     'Nouă. Una singură până la egalitate. Clasic.',
+    'Nouă. Îți lipsește exact răspunsul ăla pe care-l știai.',
+    'Nouă din douăzeci. Mijlocul e la o întrebare distanță.',
     'Nouă din douăzeci. Un pas până la jumătate.',
     'Nouă bune. Aproape echilibru.',
-    'Nouă. Foarte aproape de mijloc.',
-    'Nouă puncte. Aproape jumătate.',
   ],
   // 10
   [
     'Zece și zece. Perfect indecis.',
+    'Zece și zece. Nici tu, nici ele. Remiză.',
+    'Jumate-jumate, ca la împărțit nota de plată.',
     'Zece din douăzeci. Jumătate exact.',
     'Jumătate din runda dublă.',
-    'Jumătate. Nici bine, nici rău.',
-    'La egalitate cu întrebările.',
   ],
   // 11
   [
     'Unsprezece. Ai câștigat la puncte.',
+    'Victorie la limită, ca un gol în minutul 90.',
+    'Un punct de demnitate peste jumătate.',
     'Unsprezece din douăzeci. Peste jumătate.',
     'Ai trecut de mijloc.',
-    'Peste jumătate, cu puțin.',
-    'Unsprezece puncte. Bun sens.',
   ],
   // 12
   [
     'Doisprezece. Peste linia de plutire.',
-    'Doisprezece din douăzeci. Peste prag.',
+    'Doisprezece. Suficient cât să spui că runda a fost grea.',
+    'Opt întrebări nu-ți mai răspund la mesaje.',
+    'Doisprezece din douăzeci. Trei cincimi.',
     'Doisprezece bune. Scor rezonabil.',
-    'Trei cincimi. Se ține.',
-    'Doisprezece puncte. Solid pe distanță.',
   ],
   // 13
   [
     'Treisprezece. Noroc că nu ești superstițios.',
+    'Cifra care sperie pe toată lumea, dar nu și pe tine.',
+    'Treisprezece din douăzeci. Șapte au plecat cu alții.',
     'Treisprezece din douăzeci. Scor bun.',
-    'Treisprezece bune. Se vede consistența.',
-    'Treisprezece. Ai dus bine runda lungă.',
     'Peste prag, cu marjă.',
   ],
   // 14
   [
     'Paisprezece. Ai fi luat șapte la teză.',
+    'Paisprezece. Șase greșeli și zero regrete, sperăm.',
+    'Paisprezece din douăzeci. Restul s-au dat la fund.',
     'Paisprezece din douăzeci. Scor bun pe distanță.',
-    'Paisprezece bune. Cultură generală solidă.',
     'Șase scăpări din douăzeci.',
-    'Paisprezece puncte. Bine dus.',
   ],
   // 15
   [
     'Trei sferturi. Cât o oră de curs.',
-    'Cincisprezece din douăzeci. Trei sferturi.',
-    'Cincisprezece bune. Foarte bine.',
-    'Cincisprezece. Doar cinci scăpări.',
-    'Trei sferturi. Scor puternic.',
+    'Cinci întrebări te-au prins pe picior greșit.',
+    'Restul de cinci rămân materie pentru altă dată.',
+    'Cincisprezece din douăzeci. Scor puternic.',
+    'Cincisprezece bune, cinci ratate.',
   ],
   // 16
   [
     'Șaisprezece. Deja se laudă cineva cu tine.',
+    'Patru întrebări au scăpat printre degete și se laudă.',
+    'Opt din zece, ținut douăzeci de întrebări.',
     'Șaisprezece din douăzeci. Foarte bine.',
-    'Șaisprezece bune. Patru scăpări.',
-    'Opt din zece, ținut pe distanță dublă.',
-    'Șaisprezece puncte. Impresionant.',
+    'Patru scăpări în douăzeci de întrebări.',
   ],
   // 17
   [
     'Șaptesprezece. Trei scăpări și-un orgoliu intact.',
+    'Trei întrebări au reușit să nu se dea bătute.',
+    'Șaptesprezece din douăzeci. Se aude de aici cum știi.',
     'Șaptesprezece din douăzeci. Aproape de vârf.',
-    'Șaptesprezece bune. Doar trei ratate.',
-    'Șaptesprezece. Runda lungă nu te-a clintit.',
-    'Șaptesprezece puncte. Foarte solid.',
+    'Doar trei ratate în runda lungă.',
   ],
   // 18
   [
     'Optsprezece. Două greșeli și mult regret.',
+    'Cele două o să-ți vină în minte pe la miezul nopții.',
+    'Practic ai epuizat întrebările.',
     'Optsprezece din douăzeci. Excelent.',
-    'Optsprezece bune. Doar două ratate.',
-    'Nouă din zece, ținut douăzeci de întrebări.',
-    'Optsprezece. Aproape fără fisură.',
+    'Nouă din zece, ținut pe distanța dublă.',
   ],
   // 19
   [
     'Nouăsprezece. Aia una o să te bântuie.',
+    'O singură întrebare ține perfectul ostatic.',
+    'Ai ratat exact cât să rămâi om.',
     'Nouăsprezece din douăzeci. La un pas de tot.',
     'O singură scăpare în douăzeci.',
-    'Nouăsprezece bune. Aproape perfect.',
-    'Nouăsprezece. Cât pe ce.',
   ],
   // 20
   [
     'Douăzeci din douăzeci. Ne dăm bătuți.',
+    'Cineva a citit toată enciclopedia.',
+    'Tot. Întrebările își caută alt adversar.',
     'Perfect, pe distanța lungă.',
-    'Tot. Douăzeci de întrebări, nicio greșeală.',
-    'Douăzeci din douăzeci. Foarte rar.',
-    'Runda dublă, fără nicio fisură.',
+    'Douăzeci de întrebări, nicio greșeală.',
   ],
 ];
 
@@ -545,38 +556,38 @@ const VERDICTS_KIDS_20: string[][] = [
 const VERDICTS_FALLBACK: string[][] = [
   [
     'Runda asta a fost a întrebărilor.',
-    'Nimereala ar fi ieșit pe plus.',
-    'Nu a mers. Se întâmplă.',
-    'Întrebările au câștigat.',
+    'Nimereala ar fi ieșit pe plus. Ceea ce spune ceva.',
+    'Întrebările au câștigat și încă se laudă.',
+    'Nu a mers deloc. Se întâmplă.',
     'O luăm de la capăt.',
   ],
   [
     'Sub jumătate. Se poate repara.',
+    'Ai ciupit câteva, restul te-au ocolit elegant.',
+    'Sub jumătate, dar cu momente de strălucire. Scurte.',
     'Câteva bune, multe scăpate.',
-    'Rezonabil, dar mai e loc.',
     'Un scor de mijloc de drum.',
-    'Se vede că știi. Pe alocuri.',
   ],
   [
     'Peste jumătate. Bine.',
-    'Mai multe bune decât rele.',
+    'Peste jumătate, adică ai voie să comentezi la televizor.',
+    'Contabilitatea e de partea ta: mai multe bune.',
     'Un rezultat onorabil.',
-    'Scor decent.',
-    'Se ține.',
+    'Scor decent, cu ceva scăpări.',
   ],
   [
-    'Scor bun.',
-    'Solid. Puține scăpări.',
-    'Foarte bine dus.',
+    'Scor bun. Aproape suspect.',
+    'Câteva întrebări se fac că nu s-a întâmplat nimic.',
+    'Solid. Se aude de aici cum știi.',
+    'Foarte bine dus. Puține scăpări.',
     'Aproape de vârf.',
-    'Impresionant.',
   ],
   [
-    'Aproape perfect.',
     'Ne dăm bătuți.',
-    'Excelent.',
-    'Fără fisuri.',
-    'Runda ta.',
+    'Aproape fără fisură. Aproape.',
+    'Întrebările își caută alt adversar.',
+    'Excelent. Nimic de comentat.',
+    'Runda ta, de la cap la coadă.',
   ],
 ];
 
